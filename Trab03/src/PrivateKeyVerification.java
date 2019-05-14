@@ -79,7 +79,7 @@ public class PrivateKeyVerification {
 					}
 					if(state) {
 					System.out.println("digital sig:"+ state);
-					DecryptArquive Da = new DecryptArquive("./Pacote_T3/Files/XXYYZZ22", privateKey);
+					DecryptArquive Da = new DecryptArquive("./Pacote_T3/Files/index", privateKey);
 					try {
 						seed = Da.decrypt();
 					} catch (NoSuchProviderException e) {
@@ -144,7 +144,7 @@ public class PrivateKeyVerification {
 				if(i == 0 || i ==( parts.length-1)) {
 					
 				}else {
-					sb.append(s+"\n");
+					sb.append(s);
 				}
 				i++;
 			}
