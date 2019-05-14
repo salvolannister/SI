@@ -31,7 +31,7 @@ import javax.security.cert.X509Certificate;
 
 public class PrivateKeyVerification {
 
-	public static void main(String args[]) {
+	public static void main(String args[]) throws CertificateException {
 		
 		if(args.length < 3) {
 			System.out.println("Usage: AppName BinaryfilePath secretPhrase CertificatePath ");
@@ -79,9 +79,19 @@ public class PrivateKeyVerification {
 					}
 					if(state) {
 					System.out.println("digital sig:"+ state);
-					DecryptArquive Da = new DecryptArquive("./Pacote_T3/Files/index", privateKey);
+					
+					/*this code has to be deleted after*/
+					X509Certificate x509Certificate = X509Certificate.getInstance(certificate);
+					PublicKey publicKey = x509Certificate.getPublicKey();
+					//
+					DecryptArquive Da = new DecryptArquive("./Pacote_T3/Files/index", privateKey, publicKey);
 					try {
-						seed = Da.decrypt();
+						try {
+							byte [] arquiveText = Da.decrypt();
+						} catch (SignatureException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					} catch (NoSuchProviderException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -135,27 +145,20 @@ public class PrivateKeyVerification {
 
 	/* it removes BEGIN key and --END KEY--*/
 	private static String parsePrivateKey(byte[] plainText) {
-		try {
-			String decrypted = new String(plainText, "UTF8" );
-			int i = 0;
-			String[] parts = decrypted.split("\n"); 
-			StringBuffer sb = new StringBuffer();
-			for(String s: parts) {
-				if(i == 0 || i ==( parts.length-1)) {
-					
-				}else {
-					sb.append(s);
-				}
-				i++;
+		String decrypted = new String(plainText);
+		int i = 0;
+		String[] parts = decrypted.split("\n"); 
+		StringBuffer sb = new StringBuffer();
+		for(String s: parts) {
+			if(i == 0 || i ==( parts.length-1)) {
+				
+			}else {
+				sb.append(s+"\n");
 			}
-		//	System.out.println(sb);
-			return sb.toString();
-		} catch (UnsupportedEncodingException e) {
-		
-			e.printStackTrace();
+			i++;
 		}
-		
-		return null;
+	//	System.out.println(sb);
+		return sb.toString();
 	}
 
 	private static byte[] ReadArquive(Path pFile) {
