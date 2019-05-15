@@ -2,6 +2,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Random;
 
 import javax.naming.InvalidNameException;
@@ -25,7 +28,7 @@ public class User {
 	}
 	
 	private void setEmail(String path) throws CertificateException, InvalidNameException {
-		byte[] certificate = ReadArquive(Paths.get(path));
+		byte[] certificate = Arquives.ReadArquive(Paths.get(path));
 		X509Certificate x509Certificate = X509Certificate.getInstance(certificate);
 		String dn = x509Certificate.getSubjectDN().getName();
 		LdapName ldapDN = new LdapName(dn);
@@ -65,22 +68,16 @@ public class User {
 //		}
 	}
 	
-		private static byte[] ReadArquive(Path pFile) {
-				
-				if(Files.exists(pFile) == false) {
-					System.err.print("FILE DOESN'T EXIST, EXITING \n");
-					System.exit(2);
-				}
-				
-				try {
-					System.out.println("lendo" +pFile.toString());
-					byte[] fileBytes = Files.readAllBytes(pFile);
-					return fileBytes;
-				} catch (IOException e) {
-					
-					e.printStackTrace();
-				}
-				return null;
-			}
+
+
+	public static ResultSet getUserResultSet(String email2) throws SQLException {
+		String sql = "SELECT * FROM userdata WHERE email = ?;";
+		PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
+        preparedStatement.setString(1, email2);
+
+        ResultSet resultSet = preparedStatement.executeQuery();
+       
+		return resultSet;
+	}
 	
 }

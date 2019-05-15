@@ -50,9 +50,9 @@ public class PrivateKeyVerification {
 			String privateKey64encoded;
 			byte[] pK64decoded;
 			/* after generating the key from the secret password decrypt!*/
-			encryptedText = ReadArquive(pFile);
+			encryptedText = Arquives.ReadArquive(pFile);
 			pFile = Paths.get(args[2]);
-			certificate = ReadArquive(pFile);
+			certificate = Arquives.ReadArquive(pFile);
 //			System.out.println( new String(certificate.toString()));
 			
 			try {
@@ -161,22 +161,7 @@ public class PrivateKeyVerification {
 		return sb.toString();
 	}
 
-	private static byte[] ReadArquive(Path pFile) {
 	
-		if(Files.exists(pFile) == false) {
-			System.err.print("FILE DOESN'T EXIST, EXITING \n");
-			System.exit(2);
-		}
-		
-		try {
-			byte[] fileBytes = Files.readAllBytes(pFile);
-			return fileBytes;
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		}
-		return null;
-	}
 
 	private static Key generateSecretKey(byte[] seed) {
 		// how do I use SHA1PRNG??

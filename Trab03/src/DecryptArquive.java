@@ -46,7 +46,7 @@ public class DecryptArquive {
 		Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 		System.out.println( "\n" + cipher.getProvider().getInfo() );
 		cipher.init(Cipher.DECRYPT_MODE, k);
-		byte[] cipherText = ReadArquive(pEnv);
+		byte[] cipherText = Arquives.ReadArquive(pEnv);
 		byte[] seed = cipher.doFinal(cipherText);
 		byte[] encText; 
 		byte[] signatureText;	
@@ -59,12 +59,12 @@ public class DecryptArquive {
 		key.init(56,random);
 		/*with this key you will be able to decrypt every file*/
 		secretKey =  key.generateKey();
-		encText = ReadArquive(pEnc);			
+		encText = Arquives.ReadArquive(pEnc);			
 		cipher.getInstance("DES/ECB/PKCS5Padding");
 		cipher.init(Cipher.DECRYPT_MODE, secretKey);	
 		byte[] fileText = cipher.doFinal(encText);
 		/*verify signature: we verify the digest of .enc is the same of .asd */
-		signatureText = ReadArquive(pAsd);
+		signatureText = Arquives.ReadArquive(pAsd);
 		Signature sign = Signature.getInstance("MD5withRSA");
 		sign.initVerify(puK);
 		sign.update(fileText);
@@ -81,22 +81,6 @@ public class DecryptArquive {
 	
 	
 	
-	private static byte[] ReadArquive(Path pFile) {
-		
-		if(Files.exists(pFile) == false) {
-			System.err.print("FILE DOESN'T EXIST, EXITING \n");
-			System.exit(2);
-		}
-		
-		try {
-			System.out.println("lendo" +pFile.toString());
-			byte[] fileBytes = Files.readAllBytes(pFile);
-			return fileBytes;
-		} catch (IOException e) {
-			
-			e.printStackTrace();
-		}
-		return null;
-	}
+	
 	
 }
