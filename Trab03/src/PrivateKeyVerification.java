@@ -31,7 +31,7 @@ import javax.security.cert.X509Certificate;
 
 public class PrivateKeyVerification {
 
-	public static void main(String args[]) throws CertificateException {
+	public static void CheckPrivateKey(String args[]) throws CertificateException {
 		
 		if(args.length < 3) {
 			System.out.println("Usage: AppName BinaryfilePath secretPhrase CertificatePath ");
