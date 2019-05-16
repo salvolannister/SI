@@ -2,6 +2,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -14,12 +16,15 @@ import javax.security.cert.X509Certificate;
 
 public class User {
 	
-	String Salt;
+	String salt;
 	private String email;
 	String hashPassword;
 	String password;
 	String time;
 	private int GID; 
+	private int access;
+	private String path;
+	private int block;
 	
 	public User() {}
 	
@@ -27,12 +32,21 @@ public class User {
 		return email;
 	}
 	
+	public int getBlock() {
+		return block;
+	}
+
+	public String getSalt() {
+		return salt;
+	}	
+	
 	private void setEmail(String path) throws CertificateException, InvalidNameException {
 		byte[] certificate = Arquives.ReadArquive(Paths.get(path));
 		X509Certificate x509Certificate = X509Certificate.getInstance(certificate);
 		String dn = x509Certificate.getSubjectDN().getName();
 		LdapName ldapDN = new LdapName(dn);
 		String email = new String( ldapDN.get(5));
+		System.out.println(email);
 		email = email.replace("EMAILADDRESS=", "");
 		this.email = email;
 		
@@ -55,29 +69,77 @@ public class User {
 		
 	}
 	
-	public void registerUser(String path,int GID,String password) throws InvalidNameException, CertificateException {
+
+	
+	public void registerUser(String path,int GID,String password) throws InvalidNameException, CertificateException, NoSuchAlgorithmException {
+		this.path = path;
 		setEmail(path);
-		String salt = generateSalt();
+		this.salt = generateSalt();
 		setGroup(GID);
-		/*scrivi nel DB la mail  e il salt*/
+		
 		/*genera l'hash code del salt e password e memorizza*/ 
+		MessageDigest md = MessageDigest.getInstance("SHA");
+		md.update((salt+password).getBytes());
+		byte[] mdBytes =md.digest();
+		this.hashPassword = mdBytes.toString();
+		this.access = 0;
+		this.password = password;
+		this.GID = GID;
+		this.block = 0;
+		Database.addUser(this);
+		/*scrivi nel DB la mail, il salt, la password il numero di accessi*/
 		
 //		System.out.println(email);
 //		for(Rdn rdn: ldapDN.getRdns()) {
 //		    System.out.println(rdn.getType() + " -> " + rdn.getValue());
 //		}
 	}
-	
 
-
-	public static ResultSet getUserResultSet(String email2) throws SQLException {
-		String sql = "SELECT * FROM userdata WHERE email = ?;";
-		PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
-        preparedStatement.setString(1, email2);
-
-        ResultSet resultSet = preparedStatement.executeQuery();
-       
-		return resultSet;
+	public String getHashPassword() {
+		return hashPassword;
 	}
+
+	public int getGID() {
+		return GID;
+	}
+
+	public String getTime() {
+		// TODO Auto-generated method stub
+		return time;
+	}
+
+	public int getAccess() {
+		
+		return access;
+	}
+
+	public String getDigitalPath() {
+		
+		return path;
+	}
+	
+	public String[] getPandS() throws SQLException {
+		ResultSet rs = null;
+		String[] values = new String[2];
+		
+		if(hashPassword != null & salt!=null) {
+			values[0] = hashPassword;
+			values[1] = salt;
+			return values;
+		}else {
+			this.hashPassword = rs.getString("password");
+			this.salt = rs.getString("salt");
+			values[0] = hashPassword;
+			values[1] = salt;
+			return values;
+		}
+	}
+
+//	private String calculatePassword(String salt2, String hashPassword2) throws NoSuchAlgorithmException {
+//		MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+//		return null;
+//	}
+
+	
 	
 }
