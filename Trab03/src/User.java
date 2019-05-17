@@ -81,7 +81,14 @@ public class User {
 		MessageDigest md = MessageDigest.getInstance("SHA");
 		md.update((salt+password).getBytes());
 		byte[] mdBytes =md.digest();
-		this.hashPassword = mdBytes.toString();
+		/*convert it in HEX*/
+		StringBuffer buf = new StringBuffer();
+	    for(int i = 0; i < mdBytes.length; i++) {
+	       String hex = Integer.toHexString(0x0100 + (mdBytes[i] & 0x00FF)).substring(1);
+	       buf.append((hex.length() < 2 ? "0" : "") + hex);
+	    }
+	    
+		this.hashPassword = buf.toString();
 		this.access = 0;
 		this.password = password;
 		this.GID = GID;
