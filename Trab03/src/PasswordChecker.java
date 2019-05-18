@@ -1,3 +1,5 @@
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -5,7 +7,9 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class PasswordChecker {
-
+	
+	private static boolean OK = false;
+	
 	public static ArrayList<ArrayList<String>> createList() {
 			
 			ArrayList< ArrayList<String>> finalArray = new ArrayList<ArrayList<String>>();
@@ -33,7 +37,7 @@ public class PasswordChecker {
 			return finalArray;
 		}
 	
-	public static void RequestForPassword() {
+	public static ArrayList<ArrayList<String>> RequestForPassword() {
 		Scanner scanner = new Scanner(System.in);
 		StringBuffer sb = new StringBuffer();
 		ArrayList<ArrayList<String>> digited = new ArrayList<ArrayList<String>>();
@@ -62,46 +66,69 @@ public class PasswordChecker {
 		for (ArrayList<String> g : digited) {
 			System.out.print(g.get(0)+g.get(1)+" ");
 		}
+		return digited;
 	}
 	
-//	public static List<List<List<Integer>>> combinations(List<List<Integer>> input) {
-//	    return step(input, input.size(), new ArrayList<>());
-//	}
-//	
-//	public static List<List<Integer>> step(List<Integer> input, 
-//            int k, 
-//            List<List<Integer>> result) {
-//
-//		// We're done
-//		if (k == 0) {
-//		return result;
-//		}
-//		
-//		// Start with [[1], [2], [3]] in result
-//		if (result.size() == 0) {
-//			for (Integer i : input) {
-//				ArrayList<Integer> subList = new ArrayList<>();
-//				subList.add(i);
-//				result.add(subList);
-//			}
-//			
-//		// Around we go again.  
-//		return step(input, k - 1, result);
-//		}
-//		
-//		// Cross result with input.  Taking us to 2 entries per sub list.  Then 3. Then... 
-//		List<List<Integer>> newResult = new ArrayList<>();
-//		for (List<Integer> subList : result) {
-//		for(Integer i : input) {
-//		List<Integer> newSubList = new ArrayList<>();
-//		newSubList.addAll(subList);
-//		newSubList.add(i);
-//		newResult.add(newSubList);
-//		}
-//		}
-//		
-//		// Around we go again.  
-//		return step(input, k - 1, newResult);
-//		}
-//	
+	private static boolean verify(String salt, String hexPassword, String actual) throws NoSuchAlgorithmException {
+	
+		
+		System.out.println("tryal "+actual);
+		System.out.println("salt "+salt);
+		
+		MessageDigest md = MessageDigest.getInstance("SHA1");
+		byte[] toCheck = (salt+actual).getBytes();
+		md.update(toCheck);
+		byte[] mdBytes =md.digest();
+		/*convert it in HEX*/
+		System.out.println("passbefore HEX "+mdBytes.toString());
+		StringBuffer buf = new StringBuffer();
+	    for(int i = 0; i < mdBytes.length; i++) {
+	       String hex = Integer.toHexString(0x0100 + (mdBytes[i] & 0x00FF)).substring(1);
+	       buf.append((hex.length() < 2 ? "0" : "") + hex);
+	    }
+	    
+		String nuova = buf.toString();
+		System.out.println("calculated:"+nuova+" original "+hexPassword);
+		return nuova.contentEquals(hexPassword);
+	}
+	
+	public static boolean isPasswordValid(ArrayList<ArrayList<String>> digited,String salt, String hexPassword) throws NoSuchAlgorithmException {
+		
+		ArrayList<String> result = new ArrayList<String>();
+		 recursiveVerify(digited,0,result,salt,hexPassword); 
+		
+		return OK;
+	}
+	
+	private static void recursiveVerify(ArrayList<ArrayList<String>> digited, int k, ArrayList<String> result, String salt, String hexPassword) throws NoSuchAlgorithmException {
+		
+		if(k == digited.size() && !OK) {
+			//System.out.print("Solution:");
+			String tryal = new String();
+			for(String g: result) {
+				System.out.print(g);
+				tryal = tryal+g;
+				
+			}
+			//System.out.println("");
+			//System.out.println("tryal before verify "+tryal);
+			OK =verify(salt,hexPassword,tryal);
+			
+			return;
+		}else if (OK) {
+			return;
+		}
+		
+		ArrayList<String> newResult = new ArrayList<String>(result);
+		newResult.add(digited.get(k).get(0));
+	    recursiveVerify(digited,k+1,newResult,salt,hexPassword);
+		
+	    newResult = new ArrayList<String>(result);
+		newResult.add(digited.get(k).get(1));
+		recursiveVerify(digited,k+1,newResult,salt,hexPassword);
+		
+	}
+	
+	
+
 }

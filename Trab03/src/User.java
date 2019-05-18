@@ -18,7 +18,7 @@ public class User {
 	
 	String salt;
 	private String email;
-	String hashPassword;
+	String hexPassword;
 	String password;
 	String time;
 	private int GID; 
@@ -51,9 +51,10 @@ public class User {
 		this.email = email;
 		
 	}
+	
 	public void setGroup(int GID) {
 		this.GID = GID;
-	}
+	}	
 	
 	private static String generateSalt() {
 		String vocabulary = new String("0123456789qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM");
@@ -76,10 +77,10 @@ public class User {
 		setEmail(path);
 		this.salt = generateSalt();
 		setGroup(GID);
-		
 		/*genera l'hash code del salt e password e memorizza*/ 
-		MessageDigest md = MessageDigest.getInstance("SHA");
-		md.update((salt+password).getBytes());
+		MessageDigest md = MessageDigest.getInstance("SHA1");
+		byte[] toCheck = (salt+password).getBytes();
+		md.update(toCheck);
 		byte[] mdBytes =md.digest();
 		/*convert it in HEX*/
 		StringBuffer buf = new StringBuffer();
@@ -88,7 +89,7 @@ public class User {
 	       buf.append((hex.length() < 2 ? "0" : "") + hex);
 	    }
 	    
-		this.hashPassword = buf.toString();
+		this.hexPassword = buf.toString();
 		this.access = 0;
 		this.password = password;
 		this.GID = GID;
@@ -102,8 +103,8 @@ public class User {
 //		}
 	}
 
-	public String getHashPassword() {
-		return hashPassword;
+	public String getHexPassword() {
+		return hexPassword;
 	}
 
 	public int getGID() {
@@ -129,14 +130,14 @@ public class User {
 		ResultSet rs = null;
 		String[] values = new String[2];
 		
-		if(hashPassword != null & salt!=null) {
-			values[0] = hashPassword;
+		if(hexPassword != null & salt!=null) {
+			values[0] = hexPassword;
 			values[1] = salt;
 			return values;
 		}else {
-			this.hashPassword = rs.getString("password");
+			this.hexPassword = rs.getString("password");
 			this.salt = rs.getString("salt");
-			values[0] = hashPassword;
+			values[0] = hexPassword;
 			values[1] = salt;
 			return values;
 		}

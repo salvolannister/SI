@@ -33,7 +33,7 @@ public class Database {
 		try {
 			PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
 			preparedStatement.setString(1, u.getEmail());
-			preparedStatement.setString(2, u.getHashPassword());
+			preparedStatement.setString(2, u.getHexPassword());
 			preparedStatement.setInt(3, u.getGID());
 			preparedStatement.setString(4, u.getTime());
 			preparedStatement.setInt(5, u.getAccess());

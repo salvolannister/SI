@@ -36,9 +36,11 @@ public class Main {
 			/* scoprire come leggere un resultSEt senzza che dia errore*/
 			if(!alreadyExist) {
 				System.out.println(" you are not registred, ask the admin to register you");
-				
+				System.out.println("Insert a password of 5 digit all different");
+				System.out.print("password:");
+				String password = new String (scanner.nextLine());
 				try {
-					u.registerUser("./Pacote_T3/Keys/admin-x509.crt",0,"admin");
+					u.registerUser("./Pacote_T3/Keys/admin-x509.crt",0,password);
 				} catch (InvalidNameException | CertificateException | NoSuchAlgorithmException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
