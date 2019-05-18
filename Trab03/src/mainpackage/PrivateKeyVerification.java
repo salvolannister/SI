@@ -1,3 +1,4 @@
+package mainpackage;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
@@ -31,16 +32,16 @@ import javax.security.cert.X509Certificate;
 
 public class PrivateKeyVerification {
 
-	public static void CheckPrivateKey(String args[]) throws CertificateException {
+	public static boolean CheckPrivateKey(String args[]) throws CertificateException {
 		
 		if(args.length < 3) {
 			/*.pem file, password, .crt file*/
 			System.out.println("Usage: BinaryfilePath secretPhrase CertificatePath");
 			System.exit(1);
 		}
+		boolean state = false;
 		
 		try {
-			int errors = 0;
 			Cipher chipher = Cipher.getInstance("DES/ECB/PKCS5Padding");
 			byte [] seed = args[1].getBytes();
 			byte [] certificate = null;
@@ -70,7 +71,7 @@ public class PrivateKeyVerification {
 				/*RSA is the standard for Asymmetric Key*/
 				KeyFactory keyF = KeyFactory.getInstance("RSA");
 				try {
-					boolean state = false;
+					
 					PrivateKey privateKey = keyF.generatePrivate(Keyspec);
 					try {
 						state = CheckSignature(privateKey,certificate);
@@ -84,7 +85,7 @@ public class PrivateKeyVerification {
 					/*this code has to be deleted after*/
 					X509Certificate x509Certificate = X509Certificate.getInstance(certificate);
 					PublicKey publicKey = x509Certificate.getPublicKey();
-					//
+					// da spostare
 					DecryptArquive Da = new DecryptArquive("./Pacote_T3/Files/index", privateKey, publicKey);
 					try {
 						try {
@@ -99,12 +100,7 @@ public class PrivateKeyVerification {
 					}
 					}
 					else {
-						errors ++;
-						if(errors == 3) {
-							// TODO go back to the first tape
-						}else {
-							// TODO retry to the third tape
-						}
+						return state;
 					}
 				} catch (InvalidKeySpecException e) {
 					// TODO Auto-generated catch block
@@ -122,6 +118,8 @@ public class PrivateKeyVerification {
 			
 			e.printStackTrace();
 		}
+	
+		return state;
 	}
 	
 	private static boolean CheckSignature(PrivateKey privateKey, byte[] certificate) throws CertificateException, NoSuchAlgorithmException, InvalidKeyException, SignatureException {
@@ -197,6 +195,8 @@ public class PrivateKeyVerification {
 		System.out.println( new String(newPlainText, "UTF8") );
 		return newPlainText;
 	}
+
+
 	
 //	public static String convertToString(byte[] fileBytes) {
 //		String string = new String();

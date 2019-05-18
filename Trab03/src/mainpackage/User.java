@@ -1,3 +1,4 @@
+package mainpackage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -25,7 +26,7 @@ public class User {
 	private int access;
 	private byte[] certificate;
 	private int block;
-	
+	int attempt;
 	/*used in the sign in*/
 	public User() {
 		
@@ -38,6 +39,7 @@ public class User {
 		block = rs.getInt("block");
 		access = rs.getInt("access");
 		hexPassword = rs.getString("password");
+		attempt = rs.getInt("attempt");
 		if (block!=0)
 			time = rs.getString("time");
 		certificate = rs.getBytes("certificate");
@@ -110,6 +112,7 @@ public class User {
 		this.password = password;
 		this.GID = GID;
 		this.block = 0;
+		this.attempt= 0;
 		Database.addUser(this);
 		/*scrivi nel DB la mail, il salt, la password il numero di accessi*/
 		
@@ -157,6 +160,27 @@ public class User {
 			values[1] = salt;
 			return values;
 		}
+	}
+
+	public int getAttempt() {
+		
+		return attempt;
+	}
+
+	public void addAttempt() throws SQLException {
+		attempt++;
+	    Database.addAttempt(email,attempt);
+		
+	}
+
+	public void block(int i) throws SQLException {
+	     Database.changeBlockStatus(this,i);
+		
+	}
+
+	public void setAttempt(int i) {
+		attempt = i;
+		
 	}
 
 //	private String calculatePassword(String salt2, String hashPassword2) throws NoSuchAlgorithmException {
