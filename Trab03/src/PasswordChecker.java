@@ -10,7 +10,7 @@ public class PasswordChecker {
 	
 	private static boolean OK = false;
 	
-	public static ArrayList<ArrayList<String>> createList() {
+	private static ArrayList<ArrayList<String>> createList() {
 			
 			ArrayList< ArrayList<String>> finalArray = new ArrayList<ArrayList<String>>();
 			ArrayList<String> possibleChose = new ArrayList<String>(Arrays.asList("0","1","2","3","4","5","6","7","8","9"));

@@ -34,7 +34,8 @@ public class PrivateKeyVerification {
 	public static void CheckPrivateKey(String args[]) throws CertificateException {
 		
 		if(args.length < 3) {
-			System.out.println("Usage: AppName BinaryfilePath secretPhrase CertificatePath ");
+			/*.pem file, password, .crt file*/
+			System.out.println("Usage: BinaryfilePath secretPhrase CertificatePath");
 			System.exit(1);
 		}
 		

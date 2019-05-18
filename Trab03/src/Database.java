@@ -29,7 +29,7 @@ public class Database {
 	}
 	
 	public static boolean addUser(User u) {
-		String sql ="INSERT INTO userdata(email, password, gid, time, access, digitalpath, block, salt) VALUES (?, ?, ?, ?, ?, ?, ?,?)";
+		String sql ="INSERT INTO userdata(email, password, gid, time, access, certificate, block, salt) VALUES (?, ?, ?, ?, ?, ?, ?,?)";
 		try {
 			PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
 			preparedStatement.setString(1, u.getEmail());
@@ -37,7 +37,7 @@ public class Database {
 			preparedStatement.setInt(3, u.getGID());
 			preparedStatement.setString(4, u.getTime());
 			preparedStatement.setInt(5, u.getAccess());
-			preparedStatement.setString(6, u.getDigitalPath());
+			preparedStatement.setBytes(6, u.getCertificate());
 			preparedStatement.setInt(7, u.getBlock());
 			preparedStatement.setString(8, u.getSalt());
 			preparedStatement.executeUpdate();
@@ -52,6 +52,8 @@ public class Database {
 		
 	}
 
+	
+	
 	public static boolean checkUserExistence(String email2) throws SQLException {
 		boolean exist = false;
 		String sql = "SELECT COUNT(*) as total FROM userdata WHERE email = ?;";
@@ -66,7 +68,7 @@ public class Database {
         
 	}
 	
-	public static ResultSet retriveUser(String email2) throws SQLException {
+	public static ResultSet getUser(String email2) throws SQLException {
 		String sql = "SELECT * FROM userdata WHERE email =?";
 		PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
         preparedStatement.setString(1, email2);
@@ -75,4 +77,6 @@ public class Database {
 		return resultSet;
 		
 	}
+
+
 }

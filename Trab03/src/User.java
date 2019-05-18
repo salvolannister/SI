@@ -23,10 +23,26 @@ public class User {
 	String time;
 	private int GID; 
 	private int access;
-	private String path;
+	private byte[] certificate;
 	private int block;
 	
-	public User() {}
+	/*used in the sign in*/
+	public User() {
+		
+	}
+	
+	public User(String email) throws SQLException {
+		ResultSet rs = Database.getUser(email);
+		salt = rs.getString("salt");
+		GID = rs.getInt("gid");
+		block = rs.getInt("block");
+		access = rs.getInt("access");
+		hexPassword = rs.getString("password");
+		if (block!=0)
+			time = rs.getString("time");
+		certificate = rs.getBytes("certificate");
+		this.email = email;
+	}
 	
 	public String getEmail() {
 		return email;
@@ -40,8 +56,8 @@ public class User {
 		return salt;
 	}	
 	
-	private void setEmail(String path) throws CertificateException, InvalidNameException {
-		byte[] certificate = Arquives.ReadArquive(Paths.get(path));
+	private void setEmail(byte[] certificate) throws CertificateException, InvalidNameException {
+		
 		X509Certificate x509Certificate = X509Certificate.getInstance(certificate);
 		String dn = x509Certificate.getSubjectDN().getName();
 		LdapName ldapDN = new LdapName(dn);
@@ -73,8 +89,8 @@ public class User {
 
 	
 	public void registerUser(String path,int GID,String password) throws InvalidNameException, CertificateException, NoSuchAlgorithmException {
-		this.path = path;
-		setEmail(path);
+		this.certificate = Arquives.ReadArquive(Paths.get(path));
+		setEmail(certificate);
 		this.salt = generateSalt();
 		setGroup(GID);
 		/*genera l'hash code del salt e password e memorizza*/ 
@@ -121,9 +137,9 @@ public class User {
 		return access;
 	}
 
-	public String getDigitalPath() {
+	public byte[] getCertificate() {
 		
-		return path;
+		return certificate;
 	}
 	
 	public String[] getPandS() throws SQLException {
