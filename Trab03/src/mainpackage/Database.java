@@ -28,7 +28,7 @@ public class Database {
 	}
 	
 	public static boolean addUser(User u) {
-		String sql ="INSERT INTO userdata(email, password, gid, time, access, certificate, block, salt, attempt) VALUES (?,?, ?, ?, ?, ?, ?, ?,?)";
+		String sql ="INSERT INTO userdata(email, password, gid, time, access, certificate, block, salt, attempt, name) VALUES (?,?, ?, ?, ?, ?, ?, ?,?,?)";
 		try {
 			PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
 			preparedStatement.setString(1, u.getEmail());
@@ -40,6 +40,7 @@ public class Database {
 			preparedStatement.setInt(7, u.getBlock());
 			preparedStatement.setString(8, u.getSalt());
 			preparedStatement.setInt(9, 0);
+			preparedStatement.setString(10, u.getName());
 			preparedStatement.executeUpdate();
 			return true;
 		} catch (SQLException e) {
@@ -116,5 +117,14 @@ public class Database {
 		}
 	}
 
+	public static ResultSet getGroupName(int i) throws SQLException {
+		String sql = "SELECT name FROM groups WHERE gid =?";
+		PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
+        preparedStatement.setInt(1, i);
+
+        ResultSet resultSet = preparedStatement.executeQuery();
+		return resultSet;
+		
+	}
 
 }

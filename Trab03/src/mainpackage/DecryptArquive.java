@@ -61,7 +61,7 @@ public class DecryptArquive {
 		/*with this key you will be able to decrypt every file*/
 		secretKey =  key.generateKey();
 		encText = Arquives.ReadArquive(pEnc);			
-		cipher.getInstance("DES/ECB/PKCS5Padding");
+		cipher =Cipher.getInstance("DES/ECB/PKCS5Padding");
 		cipher.init(Cipher.DECRYPT_MODE, secretKey);	
 		byte[] fileText = cipher.doFinal(encText);
 		/*verify signature: we verify the digest of .enc is the same of .asd */

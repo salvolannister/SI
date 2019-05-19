@@ -1,6 +1,7 @@
 package test;
 
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.util.Scanner;
 import mainpackage.*;
 import javax.naming.InvalidNameException;
@@ -10,7 +11,7 @@ import mainpackage.User;
 
 public class test1 {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws SQLException {
 		// Register the user
 		Database.setDatabase("./database/trabalho3.db");
 		Scanner scanner = new Scanner(System.in);

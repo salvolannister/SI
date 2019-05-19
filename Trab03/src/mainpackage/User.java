@@ -12,11 +12,13 @@ import java.util.Random;
 
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
+import javax.naming.ldap.Rdn;
 import javax.security.cert.CertificateException;
 import javax.security.cert.X509Certificate;
 
 public class User {
 	
+	String name; 
 	String salt;
 	private String email;
 	String hexPassword;
@@ -27,9 +29,14 @@ public class User {
 	private byte[] certificate;
 	private int block;
 	int attempt;
+	private String groupName;
 	/*used in the sign in*/
 	public User() {
 		
+	}
+	
+	public String getName() {
+		return name;
 	}
 	
 	public User(String email) throws SQLException {
@@ -44,6 +51,9 @@ public class User {
 			time = rs.getString("time");
 		certificate = rs.getBytes("certificate");
 		this.email = email;
+		name = rs.getString("name");
+		rs = Database.getGroupName(GID);
+		groupName=rs.getString(1);
 	}
 	
 	public String getEmail() {
@@ -58,15 +68,22 @@ public class User {
 		return salt;
 	}	
 	
-	private void setEmail(byte[] certificate) throws CertificateException, InvalidNameException {
+	public void setEmail(byte[] certificate) throws CertificateException, InvalidNameException, SQLException {
 		
 		X509Certificate x509Certificate = X509Certificate.getInstance(certificate);
 		String dn = x509Certificate.getSubjectDN().getName();
 		LdapName ldapDN = new LdapName(dn);
 		String email = new String( ldapDN.get(5));
+		String name = new String(ldapDN.get(4));
+		System.out.println(name);
 		System.out.println(email);
 		email = email.replace("EMAILADDRESS=", "");
+		name =  name.replace("CN=","");
+		for(Rdn rdn: ldapDN.getRdns()) {
+		    System.out.println(rdn.getType() + " -> " + rdn.getValue());
+		}
 		this.email = email;
+		
 		
 	}
 	
@@ -90,7 +107,7 @@ public class User {
 	
 
 	
-	public void registerUser(String path,int GID,String password) throws InvalidNameException, CertificateException, NoSuchAlgorithmException {
+	public void registerUser(String path,int GID,String password) throws InvalidNameException, CertificateException, NoSuchAlgorithmException, SQLException {
 		this.certificate = Arquives.ReadArquive(Paths.get(path));
 		setEmail(certificate);
 		this.salt = generateSalt();
@@ -113,6 +130,8 @@ public class User {
 		this.GID = GID;
 		this.block = 0;
 		this.attempt= 0;
+		ResultSet rs = Database.getGroupName(GID);
+		groupName=rs.getString(1);
 		Database.addUser(this);
 		/*scrivi nel DB la mail, il salt, la password il numero di accessi*/
 		
@@ -181,6 +200,11 @@ public class User {
 	public void setAttempt(int i) {
 		attempt = i;
 		
+	}
+
+	public String getGroupName() {
+		// TODO Auto-generated method stub
+		return groupName;
 	}
 
 //	private String calculatePassword(String salt2, String hashPassword2) throws NoSuchAlgorithmException {

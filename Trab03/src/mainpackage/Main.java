@@ -118,7 +118,7 @@ public class Main {
 						//printHeader(u);
 						if(GID == 0) {
 							/*user interface*/
-//							printBodyOne(u,GID);
+							printBodyOne(u);
 //							printBodyTwo(GID)
 						}else {
 							/*admin interface*/
@@ -142,6 +142,14 @@ public class Main {
 	}
 
 	
+	private static void printBodyOne(User u) {
+		System.out.print("###################################################\n"+
+						 "Login: "+u.getEmail()+
+						 "\nGrupo: "+ u.getGroupName()+
+						 "\nName: "+u.getName());
+	}
+
+
 	private static void privateKeyVerification(User u) throws CertificateException, SQLException {
 		// DA VERIFICARE SE BLOCCA VERAMENTE O CRASCIA TUTTO
 		int attempt = 0;
