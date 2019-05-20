@@ -234,15 +234,8 @@ public class Main {
 							}
 						
 						
-						} catch ( NoSuchAlgorithmException | NoSuchPaddingException
-								| IllegalBlockSizeException | BadPaddingException |SignatureException | NoSuchProviderException  e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
 						} catch (UnsupportedEncodingException e) {
 							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}catch (InvalidKeyException e) {
-							System.out.println("Private or Public key is wrong");
 							e.printStackTrace();
 						} catch (FileNotFoundException e) {
 							// TODO Auto-generated catch block
