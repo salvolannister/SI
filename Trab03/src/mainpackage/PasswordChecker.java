@@ -54,13 +54,16 @@ public class PasswordChecker {
 					System.out.print(" button"+i+": "+buttons.get(i).get(0)+buttons.get(i).get(1));
 				}
 			System.out.print("\nPress 5 for OK or insert button number:")	;
-			int n = scanner.nextInt();
+			int n =Integer.parseInt(scanner.nextLine());
 			while( n<0 || n>5  ) {
 				System.out.println("\n #Button IS NOT VALID PLEASE INSERT A NUMBER BETWEEN 0 AND 5:")	;
 				System.out.print("\ninsert button number:");
-				n = scanner.nextInt();
+				n = Integer.parseInt(scanner.nextLine());
 			}
-			if(n == 5) finished =true;
+			if(n == 5) {
+				finished =true;
+				
+			}
 				else {
 					tmp.add(buttons.get(n).get(0));
 					tmp.add(buttons.get(n).get(1));
@@ -68,9 +71,9 @@ public class PasswordChecker {
 					tmp.clear();
 					x++;
 					
-					for (ArrayList<String> g : digited) {
-						System.out.print(g.get(0)+g.get(1)+" ");
-						}
+//					for (ArrayList<String> g : digited) {
+//						System.out.print(g.get(0)+g.get(1)+" ");
+//						}
 				}
 		}
 		scanner.close();
@@ -80,15 +83,15 @@ public class PasswordChecker {
 	private static boolean verify(String salt, String hexPassword, String actual) throws NoSuchAlgorithmException {
 	
 		
-		System.out.println("tryal "+actual);
-		System.out.println("salt "+salt);
+//		System.out.println("tryal "+actual);
+//		System.out.println("salt "+salt);
 		
 		MessageDigest md = MessageDigest.getInstance("SHA1");
 		byte[] toCheck = (salt+actual).getBytes();
 		md.update(toCheck);
 		byte[] mdBytes =md.digest();
 		/*convert it in HEX*/
-		System.out.println("passbefore HEX "+mdBytes.toString());
+//		System.out.println("passbefore HEX "+mdBytes.toString());
 		StringBuffer buf = new StringBuffer();
 	    for(int i = 0; i < mdBytes.length; i++) {
 	       String hex = Integer.toHexString(0x0100 + (mdBytes[i] & 0x00FF)).substring(1);
@@ -96,7 +99,7 @@ public class PasswordChecker {
 	    }
 	    
 		String nuova = buf.toString();
-		System.out.println("calculated:"+nuova+" original "+hexPassword);
+//		System.out.println("calculated:"+nuova+" original "+hexPassword);
 		return nuova.contentEquals(hexPassword);
 	}
 	
@@ -114,7 +117,7 @@ public class PasswordChecker {
 			//System.out.print("Solution:");
 			String tryal = new String();
 			for(String g: result) {
-				System.out.print(g);
+//				System.out.print(g);
 				tryal = tryal+g;
 				
 			}

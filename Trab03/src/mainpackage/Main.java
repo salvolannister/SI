@@ -113,7 +113,7 @@ public class Main {
 			}
 		ArrayList<ArrayList<String>> digited =PasswordChecker.RequestForPassword();
 		valid = PasswordChecker.isPasswordValid(digited,values[1],values[0]);
-		u.addAttempt();
+		u.addAttempt(); /* maybe this should be moved elsewhere*/
 		count ++;
 		}
 			/*password is correct*/
@@ -190,7 +190,7 @@ public class Main {
 		
 		/*show different files of the user*/
 		System.out.print("\n\nPress 0 for going back to MainPage:);");
-		int dec= sc.nextInt();
+		int dec= Integer.parseInt(sc.nextLine());
 			if(dec == 0) {
 				return;
 			}else {
@@ -211,7 +211,7 @@ public class Main {
 						}
 						System.out.println("\n\nPress 0 to exit");
 						
-						dec =sc.nextInt();
+						dec =Integer.parseInt(sc.nextLine());
 							if(dec!=0) {
 								Arquive p = files.get(dec);
 								/*if the user is not enabled ... do something*/
@@ -298,11 +298,11 @@ public class Main {
 		 }
 		
 		 System.out.print("\n– Grupo User=0 Admin=1 : ");
-		 int gid = scanner.nextInt();
+		 int gid = Integer.parseInt(scanner.nextLine());
 		 while(gid!= 0 && gid !=1) {
 			 System.out.println("Grupo pode ser User=0 ou Admin=1 ");
 			 System.out.print("\nEscreve de novo:  ");
-			 gid = scanner.nextInt();
+			 gid = Integer.parseInt(scanner.nextLine());
 		 }
 		 System.out.println("– Senha pessoal<seis, sete ou oito dígitos>: ");
 		 
@@ -316,7 +316,7 @@ public class Main {
 				
 		  }
 		  System.out.println("Press 1 para continuar Press 0 para voltar no menu principal 1");
-		  int n = scanner.nextInt();
+		  int n = Integer.parseInt(scanner.nextLine());
 		  if(n == 1) {
 			  System.out.print("###################################################\n");
 			  byte[] certificate = Arquives.ReadArquive(Paths.get(path));
@@ -333,7 +333,7 @@ public class Main {
 			 System.out.println("Sujeito: "+values[4]);
 			 System.out.println("Email: " + values[5]);
 			 System.out.println("Press 1 para continuar Press 0 para voltar no menu principal 1");
-			 n = scanner.nextInt();
+			 n = Integer.parseInt(scanner.nextLine());
 			 
 			 if(n == 1) {
 				 /*register the user in the database yeaaaa*/
@@ -350,7 +350,7 @@ public class Main {
 					System.out.println("User registered with success");
 					System.out.println("Press 1:continuar com cadastro, Press 0: voltar no menu principal");
 				}
-			 if(scanner.nextInt() == 1)
+			 if(Integer.parseInt(scanner.nextLine()) == 1)
 				 return true;
 			 
 			 }
@@ -426,6 +426,7 @@ public class Main {
 		boolean OK = false;
 		Scanner scanner = new Scanner(System.in);
 		while(attempt< 3  && !OK) {
+			
 			System.out.print("###################################################\n"+
 					   "Working Directory is"+ System.getProperty("user.dir")+		   
 					   "\n	Bynary file path:");
