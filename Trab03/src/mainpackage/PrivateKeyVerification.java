@@ -1,14 +1,11 @@
 package mainpackage;
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
@@ -16,17 +13,12 @@ import java.security.Signature;
 import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
-import java.util.Arrays;
 import java.util.Base64;
-import java.util.List;
-import java.util.Random;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
 import javax.security.cert.CertificateException;
 import javax.security.cert.X509Certificate;
 
@@ -53,7 +45,7 @@ public class PrivateKeyVerification {
 			byte[] pK64decoded;
 			/* after generating the key from the secret password decrypt!*/
 			encryptedText = Arquives.ReadArquive(pFile);
-			pFile = Paths.get(args[2]);
+//			pFile = Paths.get(args[2]);
 			certificate = u.getCertificate();
 //			System.out.println( new String(certificate.toString()));
 			
@@ -115,10 +107,11 @@ public class PrivateKeyVerification {
 			} catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException
 					| UnsupportedEncodingException e) {
 				
-				e.printStackTrace();
+				System.out.println("PrivateKey is invalid or there is a problem with padding ");
+				//e.printStackTrace();
 			}
 		} catch (NoSuchAlgorithmException e) {
-			
+			System.out.println("You can't use this algorithm");
 			e.printStackTrace();
 		} catch (NoSuchPaddingException e) {
 			

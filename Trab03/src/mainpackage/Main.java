@@ -1,34 +1,22 @@
 package mainpackage;
-import java.io.Console;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
-import java.security.Principal;
 import java.security.SignatureException;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.naming.InvalidNameException;
-import javax.naming.ldap.LdapName;
-import javax.naming.ldap.Rdn;
 import javax.security.cert.CertificateException;
 import javax.security.cert.X509Certificate;
 
@@ -38,7 +26,6 @@ public class Main {
 		Database.setDatabase("./database/trabalho3.db");
 		Scanner scanner = new Scanner(System.in);
 		boolean exit = false;
-		boolean valid = false;
 		while(!exit ) {
 			System.out.print("###################################################\n"+
 							   "		      LOGIN PAGE\n"+		   
@@ -83,7 +70,14 @@ public class Main {
 					e1.printStackTrace();
 				}
 		
-		}	
+		}
+		try {
+			Database.connection.close();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		scanner.close();
 	}
 
 
@@ -102,7 +96,7 @@ public class Main {
 
 	private static void tryLog(User u ) throws SQLException, NoSuchAlgorithmException {
 	/* read the password and check if it is correct*/
-	Scanner scanner = new Scanner(System.in);
+	
 	boolean valid =false;
 	int count = u.getAttempt();
 	String[] values = u.getPandS();
@@ -181,8 +175,8 @@ public class Main {
 				u.block(1);
 				
 			}
-			Database.connection.close();
-//			scanner.close();
+		
+		
 	}
 
 
@@ -231,6 +225,7 @@ public class Main {
 									/* create a new file*/
 									PrintWriter writer = new PrintWriter(p.getName()+".txt", "UTF-8");
 									writer.println(stringContent);
+									writer.close();
 									/* what now? stay on the page? */
 								}else {
 									System.out.println("you can't access this file");

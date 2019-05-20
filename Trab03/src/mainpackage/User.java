@@ -1,22 +1,15 @@
 package mainpackage;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Random;
 
 import javax.naming.InvalidNameException;
-import javax.naming.ldap.LdapName;
-import javax.naming.ldap.Rdn;
 import javax.security.cert.CertificateException;
-import javax.security.cert.X509Certificate;
 
 public class User {
 	
@@ -193,6 +186,7 @@ public class User {
 			values[1] = salt;
 			return values;
 		}else {
+			rs =Database.getUser(email);
 			this.hexPassword = rs.getString("password");
 			this.salt = rs.getString("salt");
 			values[0] = hexPassword;
