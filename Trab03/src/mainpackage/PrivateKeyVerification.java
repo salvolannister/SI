@@ -34,9 +34,9 @@ public class PrivateKeyVerification {
 
 	public static boolean CheckPrivateKey(String args[], User u) throws CertificateException {
 		
-		if(args.length < 3) {
+		if(args.length < 2) {
 			/*.pem file, password, .crt file*/
-			System.out.println("Usage: BinaryfilePath secretPhrase CertificatePath");
+			System.out.println("Usage: BinaryfilePath secretPhrase ");
 			System.exit(1);
 		}
 		boolean state = false;
@@ -54,7 +54,7 @@ public class PrivateKeyVerification {
 			/* after generating the key from the secret password decrypt!*/
 			encryptedText = Arquives.ReadArquive(pFile);
 			pFile = Paths.get(args[2]);
-			certificate = Arquives.ReadArquive(pFile);
+			certificate = u.getCertificate();
 //			System.out.println( new String(certificate.toString()));
 			
 			try {

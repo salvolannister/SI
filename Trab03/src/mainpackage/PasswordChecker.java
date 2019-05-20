@@ -43,7 +43,6 @@ public class PasswordChecker {
 	
 	public static ArrayList<ArrayList<String>> RequestForPassword() {
 		Scanner scanner = new Scanner(System.in);
-		StringBuffer sb = new StringBuffer();
 		ArrayList<ArrayList<String>> digited = new ArrayList<ArrayList<String>>();
 		ArrayList<String> tmp = new ArrayList<String>();
 		int x = 0;
@@ -74,9 +73,11 @@ public class PasswordChecker {
 //					for (ArrayList<String> g : digited) {
 //						System.out.print(g.get(0)+g.get(1)+" ");
 //						}
+					
+					
 				}
 		}
-		scanner.close();
+//		scanner.close();
 		return digited;
 	}
 	

@@ -63,8 +63,8 @@ public class test4 {
 				  /* instead of receving a String values, the best way could be using a class*/
 				 X509Certificate x509Certificate;
 			
-				x509Certificate = X509Certificate.getInstance(certificate);
-				System.out.println("Version: "+x509Certificate.getVersion());
+				 x509Certificate = X509Certificate.getInstance(certificate);
+				 System.out.println("Version: "+x509Certificate.getVersion());
 				 System.out.println("Serial number: "+x509Certificate.getSerialNumber().toString());
 				 System.out.println("Certificate valid before: "+x509Certificate.getNotBefore().toString()+
 						 			" Certificate valid after: "+ x509Certificate.getNotAfter().toString());
@@ -81,7 +81,7 @@ public class test4 {
 			  
 		  }
 				  
-		 scanner.close();
+//		 scanner.close();
 			return false;
 		}
 

@@ -60,7 +60,9 @@ public class Main {
 						/* crea instance di user*/
 						u = new User(email);
 						int block = u.getBlock();
+						
 						if(block == 0) {
+							
 						tryLog(u);
 						}
 						else {
@@ -108,13 +110,14 @@ public class Main {
 		while(!valid && count<3) {
 			if( count!= 0) {
 				System.out.print("###################################################\n"+
-						         "  Wrong password, try again\n"	   
+						         "           Wrong password, try again\n"	   
 						   );			
 			}
-		ArrayList<ArrayList<String>> digited =PasswordChecker.RequestForPassword();
-		valid = PasswordChecker.isPasswordValid(digited,values[1],values[0]);
+//		ArrayList<ArrayList<String>> digited =PasswordChecker.RequestForPassword();
+//		valid = PasswordChecker.isPasswordValid(digited,values[1],values[0]);
 		u.addAttempt(); /* maybe this should be moved elsewhere*/
 		count ++;
+		valid = true;
 		}
 			/*password is correct*/
 			if(valid) {
@@ -164,6 +167,7 @@ public class Main {
 //							printBodyOne(u,GID);
 //							printBodyTwo(GID);
 						}
+					
 					}
 				} catch (CertificateException | InvalidNameException e) {
 					// TODO Auto-generated catch block
@@ -177,7 +181,8 @@ public class Main {
 				u.block(1);
 				
 			}
-			scanner.close();
+			Database.connection.close();
+//			scanner.close();
 	}
 
 
@@ -250,6 +255,7 @@ public class Main {
 						}
 					
 			}
+//			sc.close();
 		return;
 	}
 
@@ -281,7 +287,7 @@ public class Main {
 		Database.updatePassword(u, password, path);
 //			
 		System.out.println("Going back to Main Menu");
-		sc.close();
+//		sc.close();
 	}
 
 
@@ -356,7 +362,7 @@ public class Main {
 			 }
 		  }
 				  
-		 scanner.close();
+//		 scanner.close();
 			return false;
 		}
 
@@ -402,7 +408,7 @@ public class Main {
 		System.out.println("4 – Sair do Sistema");
 		Scanner scanner = new Scanner(System.in);
 		String result = new String(scanner.nextLine());
-		scanner.close();
+//		scanner.close();
 		return Integer.parseInt(result);
 	}
 
@@ -416,7 +422,7 @@ public class Main {
 		System.out.print("###################################################\n"+
 						 "Login: "+u.getEmail()+
 						 "\nGrupo: "+ u.getGroupName()+
-						 "\nName: "+u.getName());
+						 "\nName: "+u.getName()+"\n");
 	}
 
 
@@ -426,29 +432,29 @@ public class Main {
 		boolean OK = false;
 		Scanner scanner = new Scanner(System.in);
 		while(attempt< 3  && !OK) {
-			
+			String str = new String();
 			System.out.print("###################################################\n"+
 					   "Working Directory is"+ System.getProperty("user.dir")+		   
 					   "\n	Bynary file path:");
-		
-			String binFilepath = new String (scanner.nextLine());
+			str = scanner.nextLine();
+			String binFilepath = new String (str);
 			System.out.print("###################################################\n"+
 					   "password:");	   
 			String secretPhrase = new String (scanner.nextLine());
 			
 			
-			System.out.print("###################################################\n"+
-					   "\n	certificate path:");
-			String certifPath = new String (scanner.nextLine());
+//			System.out.print("###################################################\n"+
+//					   "\n	certificate path:");
+//			String certifPath = new String (scanner.nextLine());
 			
-			OK = PrivateKeyVerification.CheckPrivateKey(new String[] {binFilepath,secretPhrase,certifPath}, u);
+			OK = PrivateKeyVerification.CheckPrivateKey(new String[] {binFilepath,secretPhrase}, u);
 		}
 		if(!OK) {
 			System.out.print("###################################################\n"+
 					   "You have been blocked, wait 2 minutes and try again\n" );
 			u.block(1);
 		}
-		scanner.close();
+//		scanner.close();
 	}
 
 	
