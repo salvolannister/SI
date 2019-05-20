@@ -1,21 +1,31 @@
 package mainpackage;
 import java.io.Console;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.Principal;
+import java.security.SignatureException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import javax.naming.InvalidNameException;
 import javax.naming.ldap.LdapName;
 import javax.naming.ldap.Rdn;
@@ -118,8 +128,10 @@ public class Main {
 						/* show interface for group and usuarios*/
 						int GID =u.getGID();
 						  printHeader(u);
-						if(GID == 0) {
-							/*user interface*/
+						  /*here the possible arquives will be memorized */
+						  HashMap<Integer,Arquive> files = new HashMap<>();
+						if(GID == 1) {
+							/*admin interface and possible while*/
 							printBodyOne(u);
 							int option =printMainMenu();
 							boolean ahead= false;
@@ -135,14 +147,20 @@ public class Main {
 								printHeader(u);
 								printBodyOne(u);
 								printOptionTwo(u);
+								/*going back to main menu*/
 								;
 							case 3:
+								printHeader(u);
+								//printBodyOneVersion2(u);
+								printOptionThree(u, files);
+								/*how do I calculate consultas*/
 								;
 							case 4:
+								/*go to login page*/
 								;
 							}
 						}else {
-							/*admin interface*/
+							/*user interface*/
 //							printBodyOne(u,GID);
 //							printBodyTwo(GID);
 						}
@@ -160,6 +178,86 @@ public class Main {
 				
 			}
 			scanner.close();
+	}
+
+
+	private static void printOptionThree(User u, HashMap<Integer, Arquive> files) {
+		Scanner sc= new Scanner(System.in);
+		System.out.print("Caminho da pasta <campo com 255 caracteres>: ");
+		String path = sc.nextLine();
+		/* I don't check because it crushes with more than 255 so ..*/
+		System.out.print("\n\nPress 2 to decrypt pasta do arquivio ");
+		
+		/*show different files of the user*/
+		System.out.print("\n\nPress 0 for going back to MainPage:);");
+		int dec= sc.nextInt();
+			if(dec == 0) {
+				return;
+			}else {
+				
+				/*controll validity of path after*/
+				DecryptArquive Da = new DecryptArquive(path+"index", u.getPrk(),u.getPub());
+				try {
+						/* decrypting index*/
+						byte [] arquiveText = Da.decrypt();
+						String content = new String(arquiveText, "UTF-8");
+						//System.out.println(content);
+						
+						String[] contentLines = content.split("\n");
+						
+						for(int i = 0; i<contentLines.length;i++) {
+							System.out.println("Press "+(i+1)+"to access "+contentLines[i]);
+							files.put(i, new Arquive (contentLines[i]));
+						}
+						System.out.println("\n\nPress 0 to exit");
+						
+						dec =sc.nextInt();
+							if(dec!=0) {
+								Arquive p = files.get(dec);
+								/*if the user is not enabled ... do something*/
+								int gid = getGID(p.getGroupName());
+								if(p.getDono().equals(u.getEmail()) || u.getGID() ==gid) {
+									/* the owner can read is file*/
+									Da = new DecryptArquive(path+p.getSecretName(), u.getPrk(),u.getPub());
+									/* notificare la presenza di alcuni errori mentre si decripta*/
+									byte[] byteContent = Da.decrypt();
+									String stringContent = new String(byteContent, "UTF-8");
+									System.out.println("CONTENT :"+stringContent);
+									/* create a new file*/
+									PrintWriter writer = new PrintWriter(p.getName()+".txt", "UTF-8");
+									writer.println(stringContent);
+									/* what now? stay on the page? */
+								}else {
+									System.out.println("you can't access this file");
+									/* what now? stay on the page? */
+								}
+							}
+						
+						
+						} catch ( NoSuchAlgorithmException | NoSuchPaddingException
+								| IllegalBlockSizeException | BadPaddingException |SignatureException | NoSuchProviderException  e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						} catch (UnsupportedEncodingException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}catch (InvalidKeyException e) {
+							System.out.println("Private or Public key is wrong");
+							e.printStackTrace();
+						} catch (FileNotFoundException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					
+			}
+		return;
+	}
+
+
+	private static int getGID(String groupName) {
+		if(groupName.equals("usuario"))
+			return 0;
+		return 1;
 	}
 
 
@@ -342,7 +440,7 @@ public class Main {
 					   "\n	certificate path:");
 			String certifPath = new String (scanner.nextLine());
 			
-			OK = PrivateKeyVerification.CheckPrivateKey(new String[] {binFilepath,secretPhrase,certifPath});
+			OK = PrivateKeyVerification.CheckPrivateKey(new String[] {binFilepath,secretPhrase,certifPath}, u);
 		}
 		if(!OK) {
 			System.out.print("###################################################\n"+

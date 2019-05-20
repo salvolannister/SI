@@ -32,7 +32,7 @@ import javax.security.cert.X509Certificate;
 
 public class PrivateKeyVerification {
 
-	public static boolean CheckPrivateKey(String args[]) throws CertificateException {
+	public static boolean CheckPrivateKey(String args[], User u) throws CertificateException {
 		
 		if(args.length < 3) {
 			/*.pem file, password, .crt file*/
@@ -80,24 +80,30 @@ public class PrivateKeyVerification {
 						e.printStackTrace();
 					}
 					if(state) {
-					System.out.println("digital sig:"+ state);
-					
-					/*this code has to be deleted after*/
-					X509Certificate x509Certificate = X509Certificate.getInstance(certificate);
-					PublicKey publicKey = x509Certificate.getPublicKey();
-					// da spostare
-					DecryptArquive Da = new DecryptArquive("./Pacote_T3/Files/XXYYZZ11", privateKey, publicKey);
-					try {
-						try {
-							byte [] arquiveText = Da.decrypt();
-						} catch (SignatureException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					} catch (NoSuchProviderException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+						System.out.println("digital sig verification:"+ state);
+						
+						/*this code has to be deleted after*/
+						X509Certificate x509Certificate = X509Certificate.getInstance(certificate);
+						PublicKey publicKey = x509Certificate.getPublicKey();
+						
+						u.setPrivateKey(privateKey);
+						u.setPublicKey(publicKey);
+//						
+//						String path = "./Pacote_T3/Files/" +"index";
+//						/*controll validity of path after*/
+//						DecryptArquive Da = new DecryptArquive(path, u.getPrk(),u.getPub());
+//						try {
+//								byte [] arquiveText = Da.decrypt();
+//								System.out.println(new String(arquiveText, "UTF-8"));
+//								} catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException
+//										| IllegalBlockSizeException | BadPaddingException |SignatureException | NoSuchProviderException  e) {
+//									// TODO Auto-generated catch block
+//									e.printStackTrace();
+//								} catch (UnsupportedEncodingException e) {
+//									// TODO Auto-generated catch block
+//									e.printStackTrace();
+//								}
+						
 					}
 					else {
 						return state;

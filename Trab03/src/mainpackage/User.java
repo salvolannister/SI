@@ -5,6 +5,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -24,12 +26,14 @@ public class User {
 	String hexPassword;
 	String password;
 	String time;
+	private PrivateKey prK;
 	private int GID; 
 	private int access;
 	private byte[] certificate;
 	private int block;
 	int attempt;
 	private String groupName;
+	private PublicKey publicK;
 	/*used in the sign in*/
 	public User() {
 		
@@ -39,6 +43,22 @@ public class User {
 		return name;
 	}
 	
+	public PrivateKey getPrk() {
+		/* I guees this is really unsafe but 
+		 * for the moment I have no better idea
+		 */
+		return prK;
+	}
+	public void setPrivateKey(PrivateKey k) {
+		this.prK = k;
+	}
+	
+//	public PublicKey getPub() throws CertificateException {
+//		/* is done this way because maybe you won't ask for it i a session*/
+//		X509Certificate x509Certificate = X509Certificate.getInstance(certificate);
+//		PublicKey publicKey = x509Certificate.getPublicKey();
+//		return publicKey;
+//	}
 	public User(String email) throws SQLException {
 		ResultSet rs = Database.getUser(email);
 		salt = rs.getString("salt");
@@ -211,6 +231,14 @@ public class User {
 		this.access = access + 1;
 		Database.updateAccess(access,email);
 		
+	}
+
+	public void setPublicKey(PublicKey publicKey) {
+	this.publicK = publicKey;
+		
+	}
+	public PublicKey getPub() {
+		return publicK;
 	}
 
 //	private String calculatePassword(String salt2, String hashPassword2) throws NoSuchAlgorithmException {
