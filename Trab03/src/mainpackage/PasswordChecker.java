@@ -1,4 +1,7 @@
 package mainpackage;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -44,29 +47,33 @@ public class PasswordChecker {
 		ArrayList<ArrayList<String>> digited = new ArrayList<ArrayList<String>>();
 		ArrayList<String> tmp = new ArrayList<String>();
 		int x = 0;
-		while( x  < 5) {
-		ArrayList<ArrayList<String>> buttons = createList();
-			for(int i=0; i<5; i++) {
-				System.out.print(" button"+i+": "+buttons.get(i).get(0)+buttons.get(i).get(1));
+		boolean finished = false;
+		while( x  < 8 && !finished ) {
+			ArrayList<ArrayList<String>> buttons = createList();
+				for(int i=0; i<5; i++) {
+					System.out.print(" button"+i+": "+buttons.get(i).get(0)+buttons.get(i).get(1));
+				}
+			System.out.print("\nPress 5 for OK or insert button number:")	;
+			int n = scanner.nextInt();
+			while( n<0 || n>5  ) {
+				System.out.println("\n #Button IS NOT VALID PLEASE INSERT A NUMBER BETWEEN 0 AND 5:")	;
+				System.out.print("\ninsert button number:");
+				n = scanner.nextInt();
 			}
-		System.out.print("\ninsert button number:")	;
-		String b= new String (scanner.nextLine());
-		int n = Integer.parseInt(b);
-		while( n<0 || n>4 ) {
-			System.out.println("\n VALUE IS NOT VALID PLEASE INSERT A NUMBER BETWEEN 0 AND 4:")	;
-			System.out.print("\ninsert button number:");
-			b = scanner.nextLine();
-			n = Integer.parseInt(b);
+			if(n == 5) finished =true;
+				else {
+					tmp.add(buttons.get(n).get(0));
+					tmp.add(buttons.get(n).get(1));
+					digited.add(new ArrayList<String>(tmp));
+					tmp.clear();
+					x++;
+					
+					for (ArrayList<String> g : digited) {
+						System.out.print(g.get(0)+g.get(1)+" ");
+						}
+				}
 		}
-		tmp.add(buttons.get(n).get(0));
-		tmp.add(buttons.get(n).get(1));
-		digited.add(new ArrayList<String>(tmp));
-		tmp.clear();
-		x++;
-		}
-		for (ArrayList<String> g : digited) {
-			System.out.print(g.get(0)+g.get(1)+" ");
-		}
+		scanner.close();
 		return digited;
 	}
 	
@@ -130,6 +137,23 @@ public class PasswordChecker {
 		
 	}
 	
-	
+	public static String readPassword (String prompt) {
+	      EraserThread et = new EraserThread(prompt);
+	      Thread mask = new Thread(et);
+	      mask.start();
+
+	      BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
+	      String password = "";
+
+	      try {
+	         password = in.readLine();
+	      } catch (IOException ioe) {
+	        ioe.printStackTrace();
+	      }
+	      // stop masking
+	      et.stopMasking();
+	      // return the password entered by the user
+	      return password;
+	   }
 
 }

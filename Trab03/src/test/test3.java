@@ -13,6 +13,7 @@ public class test3 {
 	public static void main(String[] args) throws CertificateException, InvalidNameException, SQLException {
 		
 		Object OK = PrivateKeyVerification.CheckPrivateKey(new String[] {"./Pacote_T3/Keys/user01-pkcs8-des.pem","user01","./Pacote_T3/Keys/user01-x509.crt" });
+		/* verifica il funzionamento della lettura del certificato*/
 		byte[] certificate = Arquives.ReadArquive(Paths.get("./Pacote_T3/Keys/user01-x509.crt"));
 		User u = new User();
 		u.setEmail(certificate);

@@ -10,7 +10,7 @@ import javax.security.cert.CertificateException;
 import mainpackage.User;
 
 public class test1 {
-
+	/*private key verification*/
 	public static void main(String[] args) throws SQLException {
 		// Register the user
 		Database.setDatabase("./database/trabalho3.db");

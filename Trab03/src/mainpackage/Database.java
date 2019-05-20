@@ -1,4 +1,6 @@
 package mainpackage;
+import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -124,6 +126,31 @@ public class Database {
 
         ResultSet resultSet = preparedStatement.executeQuery();
 		return resultSet;
+		
+	}
+	
+	/*to be checked*/
+	public static void updateAccess(int access, String email2) throws SQLException {
+		String sql = "UPDATE userdata SET access = ? WHERE email = ?;";
+		PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
+		preparedStatement.setInt(1,access);
+		preparedStatement.setString(2, email2);
+        preparedStatement.executeUpdate();
+        preparedStatement.close();
+		
+	}
+	
+	public static void updatePassword(User u, String newPassword, String newPath)throws SQLException, NoSuchAlgorithmException {
+		String sql = "UPDATE userdata SET password = ?, salt= ?, certificate=? WHERE email = ?;";
+		PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
+		String hexPassword = u.generateHexPassword(newPassword);
+		preparedStatement.setString(1,hexPassword);
+		preparedStatement.setString(2,u.getSalt()) ;
+		byte[] certificate = Arquives.ReadArquive(Paths.get(newPath));
+		preparedStatement.setBytes(3,certificate) ;
+		preparedStatement.setString(4,u.getEmail()) ;
+        preparedStatement.executeUpdate();
+        preparedStatement.close();
 		
 	}
 

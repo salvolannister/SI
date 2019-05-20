@@ -86,7 +86,7 @@ public class PrivateKeyVerification {
 					X509Certificate x509Certificate = X509Certificate.getInstance(certificate);
 					PublicKey publicKey = x509Certificate.getPublicKey();
 					// da spostare
-					DecryptArquive Da = new DecryptArquive("./Pacote_T3/Files/index", privateKey, publicKey);
+					DecryptArquive Da = new DecryptArquive("./Pacote_T3/Files/XXYYZZ11", privateKey, publicKey);
 					try {
 						try {
 							byte [] arquiveText = Da.decrypt();

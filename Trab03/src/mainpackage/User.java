@@ -70,18 +70,12 @@ public class User {
 	
 	public void setEmail(byte[] certificate) throws CertificateException, InvalidNameException, SQLException {
 		
-		X509Certificate x509Certificate = X509Certificate.getInstance(certificate);
-		String dn = x509Certificate.getSubjectDN().getName();
-		LdapName ldapDN = new LdapName(dn);
-		String email = new String( ldapDN.get(5));
-		String name = new String(ldapDN.get(4));
+		String[] values = Arquives.readCertificate(certificate);
+		String email = values[5];
+		String name = values[4];
 		System.out.println(name);
 		System.out.println(email);
-		email = email.replace("EMAILADDRESS=", "");
-		name =  name.replace("CN=","");
-		for(Rdn rdn: ldapDN.getRdns()) {
-		    System.out.println(rdn.getType() + " -> " + rdn.getValue());
-		}
+		this.name =  name;
 		this.email = email;
 		
 		
@@ -106,25 +100,16 @@ public class User {
 	}
 	
 
-	
+	/*add a user to the database and set a new instance of USER*/
 	public void registerUser(String path,int GID,String password) throws InvalidNameException, CertificateException, NoSuchAlgorithmException, SQLException {
 		this.certificate = Arquives.ReadArquive(Paths.get(path));
 		setEmail(certificate);
-		this.salt = generateSalt();
+		
 		setGroup(GID);
-		/*genera l'hash code del salt e password e memorizza*/ 
-		MessageDigest md = MessageDigest.getInstance("SHA1");
-		byte[] toCheck = (salt+password).getBytes();
-		md.update(toCheck);
-		byte[] mdBytes =md.digest();
-		/*convert it in HEX*/
-		StringBuffer buf = new StringBuffer();
-	    for(int i = 0; i < mdBytes.length; i++) {
-	       String hex = Integer.toHexString(0x0100 + (mdBytes[i] & 0x00FF)).substring(1);
-	       buf.append((hex.length() < 2 ? "0" : "") + hex);
-	    }
+		/*genera l'hash code del salt e password e memorizza*/
+		
 	    
-		this.hexPassword = buf.toString();
+		this.hexPassword = generateHexPassword(password);
 		this.access = 0;
 		this.password = password;
 		this.GID = GID;
@@ -141,6 +126,21 @@ public class User {
 //		}
 	}
 
+	public String generateHexPassword(String password) throws NoSuchAlgorithmException {
+		this.salt = generateSalt();
+		MessageDigest md = MessageDigest.getInstance("SHA1");
+		byte[] toCheck = (salt+password).getBytes();
+		md.update(toCheck);
+		byte[] mdBytes =md.digest();
+		/*convert it in HEX*/
+		StringBuffer buf = new StringBuffer();
+	    for(int i = 0; i < mdBytes.length; i++) {
+	       String hex = Integer.toHexString(0x0100 + (mdBytes[i] & 0x00FF)).substring(1);
+	       buf.append((hex.length() < 2 ? "0" : "") + hex);
+	    }
+		return buf.toString();
+	}
+	
 	public String getHexPassword() {
 		return hexPassword;
 	}
@@ -205,6 +205,12 @@ public class User {
 	public String getGroupName() {
 		// TODO Auto-generated method stub
 		return groupName;
+	}
+
+	public void addAccess() throws SQLException {
+		this.access = access + 1;
+		Database.updateAccess(access,email);
+		
 	}
 
 //	private String calculatePassword(String salt2, String hashPassword2) throws NoSuchAlgorithmException {
