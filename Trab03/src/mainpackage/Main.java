@@ -1,5 +1,7 @@
 package mainpackage;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.file.Paths;
@@ -112,8 +114,11 @@ public class Main {
 						   );			
 			}
 //		ArrayList<ArrayList<String>> digited =PasswordChecker.RequestForPassword();
-		/* to be added <5 */
-//		if(digited.size()>8 ) valid  =false;
+//		/* to be added <5 */
+//		if(digited.size()>8 || digited.size()<6 ) {
+//			System.out.println("Password must be length must be between 8 and 6 digits");
+//			valid  =false;
+//		}
 //		else {
 //		valid = PasswordChecker.isPasswordValid(digited,values[1],values[0]);
 //		}
@@ -221,7 +226,10 @@ public class Main {
 				;
 			case 4:
 				/*go to login page*/
-				return 0;
+				printHeader(u);
+				printTotalAccess(u);
+				return printExitInteface();
+				
 				
 		}
 			return 0;
@@ -243,7 +251,7 @@ public class Main {
 
 	private static int userInterface(int option, User u, HashMap<Integer, Arquive> files) {
 		
-		
+		boolean continuar = true;
 		switch(option) {
 		case 1:
 				printHeader(u);
@@ -256,21 +264,33 @@ public class Main {
 				e.printStackTrace();
 			}
 			
-			;
+			return 1;
 		case 2:
-			printHeader(u);
+			
+			while(continuar) {
+				printHeader(u);
 			/*Body2 :how do I calculate consultas*/
-			printOptionPasta(u, files);
-			;
+			continuar =printOptionPasta(u, files);
+			}
+			return 1;
 		case 3:
-			
-			
-			;
+			printHeader(u);
+			printTotalAccess(u);
+			return printExitInteface();
 	}
 		return 0;
 	}
 
-	private static void printOptionPasta(User u, HashMap<Integer, Arquive> files) {
+	private static int printExitInteface() {
+		Scanner sc = new Scanner(System.in);
+		System.out.println("                                GOODBYE");
+		System.out.println("Press 0 to exit or 1 to go to MainMenu:");
+		int d=  Integer.parseInt(sc.nextLine());
+		return d;
+	}
+
+
+	private static boolean printOptionPasta(User u, HashMap<Integer, Arquive> files) {
 		Scanner sc= new Scanner(System.in);
 		System.out.print("Caminho da pasta <campo com 255 caracteres>:");
 		String path = sc.nextLine();
@@ -281,7 +301,7 @@ public class Main {
 		System.out.print("\n\nPress 0 for going back to MainPage:");
 		int dec= Integer.parseInt(sc.nextLine());
 			if(dec == 0) {
-				return;
+				return false;
 			}else {
 				
 				/*controll validity of path after*/
@@ -308,21 +328,36 @@ public class Main {
 								int gid = getGID(p.getGroupName());
 								if(p.getDono().equals(u.getEmail()) || u.getGID() ==gid) {
 									/* the owner can read is file*/
-									Da = new DecryptArquive(path+p.getSecretName(), u.getPrk(),u.getPub());
+									
+									Da = new DecryptArquive(path+p.getName(), u.getPrk(),u.getPub());
 									/* notificare la presenza di alcuni errori mentre si decripta*/
 									byte[] byteContent = Da.decrypt();
-									String stringContent = new String(byteContent, "UTF-8");
-									System.out.println("CONTENT :"+stringContent);
-									/* create a new file*/
-									PrintWriter writer = new PrintWriter(p.getName()+".txt", "UTF-8");
-									writer.println(stringContent);
-									writer.close();
-									/* what now? stay on the page? */
+									if(byteContent != null) {
+										
+										/* create a new file*/
+										FileOutputStream fos = new FileOutputStream(path + "\\" +p.getSecretName());
+										try {
+											fos.write(byteContent);
+										} catch (IOException e) {
+											System.out.println("Arquivo nao fui salvad com Sucesso!");
+											e.printStackTrace();
+										}
+										System.out.println("Arquivo Salvo com Sucesso!");
+									}
+									/* what now? stay on the page? YES*/
 								}else {
 									System.out.println("you can't access this file");
 									/* what now? stay on the page? */
 								}
+								System.out.println("\n\nPress 0 to exit or 1 to continue reading:");
+								
+								dec =Integer.parseInt(sc.nextLine());
+								if(dec!=0) {
+									return true;
+								}
+								return false;
 							}
+							return false;
 						
 					}
 						} catch (UnsupportedEncodingException e) {
@@ -336,7 +371,7 @@ public class Main {
 				
 			
 //			sc.close();
-		return;
+		return false;
 	}
 
 

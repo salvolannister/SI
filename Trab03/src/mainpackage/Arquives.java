@@ -14,14 +14,14 @@ import javax.security.cert.X509Certificate;
 public class Arquives {
 	
 	public static byte[] ReadArquive(Path pFile) {
-		
+		System.out.println("lendo" +pFile.toString());
 		if(Files.exists(pFile) == false) {
 			System.err.print("FILE DOESN'T EXIST, EXITING \n");
 			System.exit(2);
 		}
 		
 		try {
-			System.out.println("lendo" +pFile.toString());
+			
 			byte[] fileBytes = Files.readAllBytes(pFile);
 			return fileBytes;
 		} catch (IOException e) {

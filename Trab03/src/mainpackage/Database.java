@@ -68,12 +68,32 @@ public class Database {
         
 	}
 	
-	public static ResultSet getUser(String email2) throws SQLException {
+	public static void getUser(String email2, User u) throws SQLException {
 		String sql = "SELECT * FROM userdata WHERE email =?";
 		PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
         preparedStatement.setString(1, email2);
-        ResultSet resultSet = preparedStatement.executeQuery();
-		return resultSet;
+        ResultSet rs = preparedStatement.executeQuery();
+        
+        u.setSalt(rs.getString("salt"));
+        int GID = rs.getInt("gid");
+		u.setGroup(GID);
+		int block = rs.getInt("block");
+		u.setBlock( block);
+		u.setAccess(rs.getInt("access"));
+		u.setHex(rs.getString("password"));
+		u.setAttempt(rs.getInt("attempt"));
+		if (block!=0)
+			u.setTime(rs.getString("time"));
+		u.setCertificate(rs.getBytes("certificate"));
+		
+		u.setName(rs.getString("name"));
+		rs.close();
+		preparedStatement.close();
+		Database.getGroupName(GID, u);
+		
+		
+       
+		
 		
 	}
 
@@ -116,13 +136,14 @@ public class Database {
 		}
 	}
 
-	public static ResultSet getGroupName(int i) throws SQLException {
+	public static  void getGroupName(int i, User u) throws SQLException {
 		String sql = "SELECT name FROM groups WHERE gid =?";
 		PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
         preparedStatement.setInt(1, i);
-
+       
         ResultSet resultSet = preparedStatement.executeQuery();
-		return resultSet;
+        u.setGroupName(resultSet.getString(1));
+		preparedStatement.close();
 		
 	}
 	

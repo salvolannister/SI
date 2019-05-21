@@ -13,8 +13,8 @@ import javax.security.cert.CertificateException;
 
 public class User {
 	
-	String name; 
-	String salt;
+	private String name; 
+	private String salt;
 	private String email;
 	String hexPassword;
 	String password;
@@ -53,22 +53,23 @@ public class User {
 //		return publicKey;
 //	}
 	public User(String email) throws SQLException {
-		ResultSet rs = Database.getUser(email);
-		salt = rs.getString("salt");
-		GID = rs.getInt("gid");
-		block = rs.getInt("block");
-		access = rs.getInt("access");
-		hexPassword = rs.getString("password");
-		attempt = rs.getInt("attempt");
-		if (block!=0)
-			time = rs.getString("time");
-		certificate = rs.getBytes("certificate");
+
+//		salt = rs.getString("salt");
+//		GID = rs.getInt("gid");
+//		block = rs.getInt("block");
+//		access = rs.getInt("access");
+//		hexPassword = rs.getString("password");
+//		attempt = rs.getInt("attempt");
+//		if (block!=0)
+//			time = rs.getString("time");
+//		certificate = rs.getBytes("certificate");
+//		this.email = email;
+//		name = rs.getString("name");
+//		rs.close();
+//		rs = Database.getGroupName(GID);
+//		groupName=rs.getString(1);
+//		rs.close();
 		this.email = email;
-		name = rs.getString("name");
-		rs.close();
-		rs = Database.getGroupName(GID);
-		groupName=rs.getString(1);
-		rs.close();
 	}
 	
 	public String getEmail() {
@@ -130,8 +131,8 @@ public class User {
 		this.GID = GID;
 		this.block = 0;
 		this.attempt= 0;
-		ResultSet rs = Database.getGroupName(GID);
-		groupName=rs.getString(1);
+		Database.getGroupName(GID, this);
+		
 		Database.addUser(this);
 		/*scrivi nel DB la mail, il salt, la password il numero di accessi*/
 		
@@ -188,9 +189,8 @@ public class User {
 			values[1] = salt;
 			return values;
 		}else {
-			rs =Database.getUser(email);
-			this.hexPassword = rs.getString("password");
-			this.salt = rs.getString("salt");
+			Database.getUser(email, this);
+			
 			values[0] = hexPassword;
 			values[1] = salt;
 			return values;
@@ -208,6 +208,10 @@ public class User {
 		
 	}
 
+	public void setBlock(int i) {
+		block = i;
+	}
+	
 	public void block(int i) throws SQLException {
 	     Database.changeBlockStatus(this,i);
 		
@@ -236,6 +240,41 @@ public class User {
 	public PublicKey getPub() {
 		return publicK;
 	}
+
+	public void setSalt(String string) {
+		salt = string;
+		
+	}
+
+	public void setAccess(int int1) {
+	access = int1;
+		
+	}
+
+	public void setHex(String string) {
+    this.hexPassword = string;
+	}
+
+	public void setTime(String string) {
+		time = string;
+		
+	}
+
+	public void setCertificate(byte[] bytes) {
+		certificate = bytes;
+		
+	}
+
+	public void setName(String string) {
+		name = string;
+	}
+
+	public void setGroupName(String string) {
+		groupName = string;
+		
+	}
+
+	
 
 //	private String calculatePassword(String salt2, String hashPassword2) throws NoSuchAlgorithmException {
 //		MessageDigest messageDigest = MessageDigest.getInstance("MD5");
