@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Database {
 	
@@ -42,6 +43,7 @@ public class Database {
 			preparedStatement.setInt(9, 0);
 			preparedStatement.setString(10, u.getName());
 			preparedStatement.executeUpdate();
+			preparedStatement.close();
 			return true;
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
@@ -181,5 +183,62 @@ public class Database {
         preparedStatement.close();
 		return numU;
 	}
+
+	public static void addMessage(int code, String line) {
+		String sql ="INSERT INTO messages(recordID, operation) VALUES (?,?)";
+		try {
+			PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
+			preparedStatement.setInt(1, code);
+			preparedStatement.setString(2,line);
+			
+			preparedStatement.executeUpdate();
+			preparedStatement.close();
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
+	}
+	
+	public static void addLog(int code) {
+		 LocalDateTime dateTime = LocalDateTime.now();
+		 String data = dateTime.format( DateTimeFormatter.ISO_DATE_TIME);
+		 String sql ="INSERT INTO records(recordID, date) VALUES (?,?)";
+			try {
+				PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
+				preparedStatement.setInt(1, code);
+				preparedStatement.setString(2,data);
+				preparedStatement.executeUpdate();
+				preparedStatement.close();
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		 
+	}
+	
+	public static void addLog(int code, String email, String fileName) {
+		 LocalDateTime dateTime = LocalDateTime.now();
+		 String data = dateTime.format( DateTimeFormatter.ISO_DATE_TIME);
+		 String sql ="INSERT INTO records(recordID, date, email, file) VALUES (?,?)";
+			try {
+				PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
+				preparedStatement.setInt(1, code);
+				preparedStatement.setString(2,data);
+				preparedStatement.setString(3,email);
+				preparedStatement.setString(4,email);
+				preparedStatement.executeUpdate();
+				preparedStatement.close();
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		 
+	}
+
 
 }
