@@ -261,7 +261,7 @@ public class Database {
 
 	public static void printLogs()
 	{
-		String query = "select * from records, messages where messages.recordID = records.recordID";
+		String query = "select * from records, messages where messages.recordID = records.recordID order by records.date";
 		
 		
 		try {

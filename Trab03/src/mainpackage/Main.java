@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -218,13 +219,14 @@ public class Main {
 		boolean ahead = false;
 			switch(option) {
 			case 1:
-				Database.addLog(5001,u.getEmail());
+				Database.addLog(5002,u.getEmail());
 				while(!ahead) {
 					printHeader(u);
 					printTotalUser();
 					try {
 						try {
-							ahead = printRegisterUser();
+							Database.addLog(6001, u.getEmail());
+							ahead = printRegisterUser(u);
 						} catch (InvalidNameException | CertificateException | SQLException e) {
 							// TODO Auto-generated catch block
 							ahead = false;
@@ -237,10 +239,11 @@ public class Main {
 				}
 				return 1;
 			case 2:
-				Database.addLog(5002,u.getEmail());
+				Database.addLog(5003,u.getEmail());
 				printHeader(u);
 				printTotalAccess(u);
 				try {
+					Database.addLog(7001, u.getEmail());
 					printOptionPassword(u);
 				} catch (NoSuchAlgorithmException | SQLException e) {
 					
@@ -250,7 +253,7 @@ public class Main {
 				/*going back to main menu*/
 				
 			case 3:
-				Database.addLog(5003,u.getEmail());
+				Database.addLog(5004,u.getEmail());
 				printHeader(u);
 				//printBodyOneVersion2(u);
 				printOptionPasta(u, files2);
@@ -258,7 +261,7 @@ public class Main {
 				;
 			case 4:
 				/*go to login page*/
-				Database.addLog(5004,u.getEmail());
+				Database.addLog(5005,u.getEmail());
 				printHeader(u);
 				printTotalAccess(u);
 				return printExitInteface();
@@ -292,6 +295,7 @@ public class Main {
 				printTotalAccess(u);
 			try {
 				/*option two is option 1 for user*/
+				Database.addLog(7001, u.getEmail());
 				printOptionPassword(u);
 			} catch (NoSuchAlgorithmException | SQLException e) {
 				// TODO Auto-generated catch block
@@ -331,9 +335,16 @@ public class Main {
 
 
 	private static boolean printOptionPasta(User u, HashMap<Integer, Arquive> files) {
+		Database.addLog(8001, u.getEmail());
 		Scanner sc= new Scanner(System.in);
 		System.out.print("Caminho da pasta <campo com 255 caracteres>:");
 		String path = sc.nextLine();
+		while(Files.exists(Paths.get(path)) == false) {
+			Database.addLog(8004,u.getEmail());
+			System.err.print("FILE DOESN'T EXIST, EXITING \n");
+			System.out.print("Caminho da pasta invalido escerever de novo:");
+		    path = sc.nextLine();
+		}
 		/* I don't check because it crushes with more than 255 so ..*/
 		System.out.print("\n\nPress 2 to decrypt pasta do arquivio");
 		
@@ -341,9 +352,10 @@ public class Main {
 		System.out.print("\n\nPress 0 for going back to MainPage:");
 		int dec= Integer.parseInt(sc.nextLine());
 			if(dec == 0) {
+				Database.addLog(8002, u.getEmail());
 				return false;
 			}else {
-				
+				Database.addLog(8003, u.getEmail());
 				/*controll validity of path after*/
 				DecryptArquive Da = new DecryptArquive(path+"index", u.getPrk(),u.getPub());
 				try {
@@ -352,9 +364,9 @@ public class Main {
 					if(arquiveText!= null) {
 						String content = new String(arquiveText, "UTF-8");
 						//System.out.println(content);
-						
+						Database.addLog(8005, u.getEmail());
 						String[] contentLines = content.split("\n");
-						
+						Database.addLog(8006, u.getEmail()); /*mmm*/
 						for(int i = 0; i<contentLines.length;i++) {
 							System.out.println("Press "+(i+1)+" to access "+contentLines[i]);
 							files.put(i, new Arquive (contentLines[i]));
@@ -428,6 +440,12 @@ public class Main {
 		boolean OK = false;
 		System.out.print("Caminho do certificado digital <campo com 255 caracteres>:");
 		String path = sc.nextLine();
+		while(Files.exists(Paths.get(path)) == false) {
+			System.err.print("\npath is not valid insert again:");
+			System.out.print("Caminho do certificado digital <campo com 255 caracteres>:");
+			 path = sc.nextLine();
+			 Database.addLog(7003,u.getEmail());
+		}
 		while(!OK) {
 		System.out.print("\n– Senha pessoal:");
 	   // String password = PasswordChecker.readPassword("– Senha pessoal: ");
@@ -437,16 +455,20 @@ public class Main {
 		String checkPassword = sc.nextLine();
 		
 		if(checkPassword.equals(password))
+			Database.addLog(7002, u.getEmail());
+			Database.addLog(7005, u.getEmail());
 			OK = true;
 		}
+		Database.addLog(7004, u.getEmail());
 		Database.updatePassword(u, password, path);
 //			
 		System.out.println("Going back to Main Menu");
+		
 //		sc.close();
 	}
 
 
-	private static boolean printRegisterUser() throws InvalidNameException, CertificateException, SQLException, NoSuchAlgorithmException {
+	private static boolean printRegisterUser(User u) throws InvalidNameException, CertificateException, SQLException, NoSuchAlgorithmException {
 		 Scanner scanner = new Scanner(System.in);
 		 System.out.println("");
 		 System.out.println("Formulário de Cadastro:");
@@ -456,6 +478,14 @@ public class Main {
 		 while (path.length() > 255) {
 			 System.out.println("caminho deve ser max 255 caaracteres, insert again:");
 			 path = new String(scanner.nextLine());
+			 
+		 }
+		 byte[] certificate = Arquives.ReadArquive(Paths.get(path));
+		 while(certificate == null ) {
+			 System.out.println("path errado, insert again: ");
+			  Database.addLog(6004, u.getEmail());
+			 path = new String(scanner.nextLine());
+			 certificate = Arquives.ReadArquive(Paths.get(path));
 		 }
 		
 		 System.out.print("\n– Grupo User=0 Admin=1:");
@@ -465,11 +495,15 @@ public class Main {
 			 System.out.print("\nEscreve de novo:");
 			 gid = Integer.parseInt(scanner.nextLine());
 		 }
+		 
+		 String[] values = Arquives.readCertificate(certificate);
+		 
 		 System.out.println("– Senha pessoal<seis, sete ou oito dígitos>:");
 		 
 		 String password = new String(scanner.nextLine());
 		 boolean OK = checkPassword(password);
 		  while(!OK ) {
+			     Database.addLog(6003, u.getEmail());
 			     System.out.print("\nEsreve de novo a password: ");
 			     password = new String(scanner.nextLine());
 			  	 OK = checkPassword(password);
@@ -478,9 +512,9 @@ public class Main {
 		  System.out.println("Press 1 para continuar Press 0 para voltar no menu principal");
 		  int n = Integer.parseInt(scanner.nextLine());
 		  if(n == 1) {
+			 
 			  System.out.print("###################################################\n");
-			  byte[] certificate = Arquives.ReadArquive(Paths.get(path));
-			  String[] values = Arquives.readCertificate(certificate);
+			  
 			  /* instead of receving a String values, the best way could be using a class*/
 			 X509Certificate x509Certificate = X509Certificate.getInstance(certificate);
 			 x509Certificate = X509Certificate.getInstance(certificate);
@@ -492,19 +526,23 @@ public class Main {
 			 System.out.println("Issuer info: "+ x509Certificate.getIssuerDN().getName());	
 			 System.out.println("Sujeito: "+values[4]);
 			 System.out.println("Email: " + values[5]);
+			 Database.addLog(6002, values[5]);
 			 System.out.println("Press 1 para continuar, Press 0 para voltar no menu principal:");
 			 n = Integer.parseInt(scanner.nextLine());
 			 
 			 if(n == 1) {
+				 
 				 /*register the user in the database yeaaaa*/
 				boolean alreadyExist= Database.checkUserExistence(values[5]) ;
 				if(alreadyExist) {
+					Database.addLog(6006, values[5]);
 					System.out.println("This user already exist!");
 					System.out.println("Dados prenenchido");
 					System.out.print("Path: "+path+"\n");
 					System.out.print("Group: "+gid+"\n");
 					System.out.println("Press 1:continuar com cadastro, Press 0: voltar no menu principal");
 				}else {
+					Database.addLog(6005, values[5]);
 					User b = new User();
 					b.registerUser(path, gid, password);
 					System.out.println("User registered with success");
@@ -518,6 +556,7 @@ public class Main {
 		  }
 				  
 //		 scanner.close();
+		  	Database.addLog(6007, values[5]);
 			return true;
 		}
 
