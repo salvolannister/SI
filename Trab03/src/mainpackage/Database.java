@@ -151,4 +151,14 @@ public class Database {
 		
 	}
 
+	public static int getTotalAccess() throws SQLException {
+		String sql = "SELECT COUNT(*) as numU FROM userdata";
+		PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
+	    ResultSet resultSet = preparedStatement.executeQuery();
+        int numU = resultSet.getInt(1);
+//        System.out.println("numU: "+numU);
+        preparedStatement.close();
+		return numU;
+	}
+
 }

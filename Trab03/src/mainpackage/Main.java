@@ -129,14 +129,16 @@ public class Main {
 				/*verification of private key*/
 				
 				try {
+					/*3 ETAPA privateKey verification*/
 					privateKeyVerification(u);
 				} catch (CertificateException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-				/*3 ETAPA add one access*/
+				
 				if(u.getBlock()==0)
 					{
+					/*interface moment*/
 					thirdStep(u);
 					}
 			
@@ -154,81 +156,126 @@ public class Main {
 	private static void thirdStep(User u) throws SQLException {
 		
 		int GID =u.getGID();
-		printHeader(u);
-		/*verification of private key*/
-		try {
-				/* show interface for group and usuarios*/
+		int decision = 1;
+		HashMap<Integer,Arquive> files = new HashMap<>();
+		/* ripeti fin quando l'user non chiede di uscire*/
+		while(decision == 1) { 
+			printHeader(u);
+		
+		
 				
-				 
+
 				  /*here the possible arquives will be memorized */
-				  HashMap<Integer,Arquive> files = new HashMap<>();
-				
-					/*admin interface and possible while*/
-					printBodyOne(u);
-					int option =printMainMenu(GID);
-					boolean ahead= false;
-					if(GID == 1) {
-						adminInterface(option,u,files);
-					}else {
-					/*user interface*/
-						userInterface(option,u,files);
-					}
-				} catch (CertificateException | InvalidNameException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-					}
+				 
+					printTotalAccess(u);
+						int option =printMainMenu(GID);
+						/* show interface for group and usuarios*/
+						if(GID == 1) {
+							decision =adminInterface(option,u,files);
+						}else {
+						/*user interface*/
+							decision =userInterface(option,u,files);
+						}
+		}
 	}
 
-	private static void adminInterface(int option, User u, HashMap<Integer, Arquive> files2) {
-		HashMap<Integer,Arquive> files = new HashMap<>();
+	private static int adminInterface(int option, User u, HashMap<Integer, Arquive> files2) {
+		
 		boolean ahead = false;
-		switch(option) {
-		case 1:
-			while(!ahead) {
+			switch(option) {
+			case 1:
+				while(!ahead) {
+					printHeader(u);
+					printTotalUser();
+					try {
+						try {
+							ahead = printRegisterUser();
+						} catch (InvalidNameException | CertificateException | SQLException e) {
+							// TODO Auto-generated catch block
+							ahead = false;
+							e.printStackTrace();
+						}
+					} catch (NoSuchAlgorithmException e) {
+						ahead = false;
+						e.printStackTrace();
+					}
+				}
+				return 1;
+			case 2:
 				printHeader(u);
-				printBodyOne(u);
+				printTotalAccess(u);
 				try {
-					ahead = printRegisterUser();
-				} catch (NoSuchAlgorithmException e) {
-					ahead = false;
+					printOptionPassword(u);
+				} catch (NoSuchAlgorithmException | SQLException e) {
+					
 					e.printStackTrace();
 				}
+				return 1;
+				/*going back to main menu*/
+				
+			case 3:
+				printHeader(u);
+				//printBodyOneVersion2(u);
+				printOptionPasta(u, files2);
+				/*Body 2:how do I calculate consultas*/
+				;
+			case 4:
+				/*go to login page*/
+				return 0;
+				
+		}
+			return 0;
+	}
+	
+	private static void printTotalUser() {
+		int totUser= 0;
+		try {
+			totUser = Database.getTotalAccess();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.print("###################################################\n");
+		System.out.println("Total number of system's user:"+totUser);
+		
+	}
+
+
+	private static int userInterface(int option, User u, HashMap<Integer, Arquive> files) {
+		
+		
+		switch(option) {
+		case 1:
+				printHeader(u);
+				printTotalAccess(u);
+			try {
+				/*option two is option 1 for user*/
+				printOptionPassword(u);
+			} catch (NoSuchAlgorithmException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+			
 			;
 		case 2:
 			printHeader(u);
-			printBodyOne(u);
-			try {
-				printOptionTwo(u);
-			} catch (NoSuchAlgorithmException e) {
-				
-				e.printStackTrace();
-			}
-			/*going back to main menu*/
+			/*Body2 :how do I calculate consultas*/
+			printOptionPasta(u, files);
 			;
 		case 3:
-			printHeader(u);
-			//printBodyOneVersion2(u);
-			printOptionThree(u, files);
-			/*how do I calculate consultas*/
-			;
-		case 4:
-			/*go to login page*/
+			
+			
 			;
 	}
-	}
-	
-	private static void userInterface(int option, User u, HashMap<Integer, Arquive> files) {
-		
-		
+		return 0;
 	}
 
-	private static void printOptionThree(User u, HashMap<Integer, Arquive> files) {
+	private static void printOptionPasta(User u, HashMap<Integer, Arquive> files) {
 		Scanner sc= new Scanner(System.in);
-		System.out.print("Caminho da pasta <campo com 255 caracteres>: ");
+		System.out.print("Caminho da pasta <campo com 255 caracteres>:");
 		String path = sc.nextLine();
 		/* I don't check because it crushes with more than 255 so ..*/
-		System.out.print("\n\nPress 2 to decrypt pasta do arquivio ");
+		System.out.print("\n\nPress 2 to decrypt pasta do arquivio");
 		
 		/*show different files of the user*/
 		System.out.print("\n\nPress 0 for going back to MainPage:");
@@ -300,18 +347,18 @@ public class Main {
 	}
 
 
-	private static void printOptionTwo(User u) throws NoSuchAlgorithmException, SQLException {
+	private static void printOptionPassword(User u) throws NoSuchAlgorithmException, SQLException {
 		Scanner sc = new Scanner(System.in);
 		String password = new String() ;
 		boolean OK = false;
-		System.out.print("Caminho do certificado digital: <campo com 255 caracteres> \r\n");
+		System.out.print("Caminho do certificado digital <campo com 255 caracteres>:");
 		String path = sc.nextLine();
 		while(!OK) {
-		System.out.print("– Senha pessoal:  \r\n");
+		System.out.print("\n– Senha pessoal:");
 	   // String password = PasswordChecker.readPassword("– Senha pessoal: ");
 		 password = sc.nextLine();
 		checkPassword(password);
-		System.out.print("–Confirm senha pessoal:  \r\n");
+		System.out.print("\n–Confirm senha pessoal:");
 		String checkPassword = sc.nextLine();
 		
 		if(checkPassword.equals(password))
@@ -329,24 +376,23 @@ public class Main {
 		 System.out.println("");
 		 System.out.println("Formulário de Cadastro:");
 		 System.out.println("");
-		 System.out.print("– Caminho do arquivo do certificado digital<campo com 255 caracteres>: ");
+		 System.out.print("– Caminho do arquivo do certificado digital<campo com 255 caracteres>:");
 		 String path = new String(scanner.nextLine());
 		 while (path.length() > 255) {
 			 System.out.println("caminho deve ser max 255 caaracteres, insert again:");
 			 path = new String(scanner.nextLine());
 		 }
 		
-		 System.out.print("\n– Grupo User=0 Admin=1 : ");
+		 System.out.print("\n– Grupo User=0 Admin=1:");
 		 int gid = Integer.parseInt(scanner.nextLine());
 		 while(gid!= 0 && gid !=1) {
 			 System.out.println("Grupo pode ser User=0 ou Admin=1 ");
-			 System.out.print("\nEscreve de novo:  ");
+			 System.out.print("\nEscreve de novo:");
 			 gid = Integer.parseInt(scanner.nextLine());
 		 }
-		 System.out.println("– Senha pessoal<seis, sete ou oito dígitos>: ");
+		 System.out.println("– Senha pessoal<seis, sete ou oito dígitos>:");
 		 
 		 String password = new String(scanner.nextLine());
-		 password = new String(scanner.nextLine());
 		 boolean OK = checkPassword(password);
 		  while(!OK ) {
 			     System.out.print("\nEsreve de novo a password: ");
@@ -354,7 +400,7 @@ public class Main {
 			  	 OK = checkPassword(password);
 				
 		  }
-		  System.out.println("Press 1 para continuar Press 0 para voltar no menu principal 1");
+		  System.out.println("Press 1 para continuar Press 0 para voltar no menu principal");
 		  int n = Integer.parseInt(scanner.nextLine());
 		  if(n == 1) {
 			  System.out.print("###################################################\n");
@@ -371,7 +417,7 @@ public class Main {
 			 System.out.println("Issuer info: "+ x509Certificate.getIssuerDN().getName());	
 			 System.out.println("Sujeito: "+values[4]);
 			 System.out.println("Email: " + values[5]);
-			 System.out.println("Press 1 para continuar Press 0 para voltar no menu principal 1");
+			 System.out.println("Press 1 para continuar, Press 0 para voltar no menu principal:");
 			 n = Integer.parseInt(scanner.nextLine());
 			 
 			 if(n == 1) {
@@ -389,14 +435,15 @@ public class Main {
 					System.out.println("User registered with success");
 					System.out.println("Press 1:continuar com cadastro, Press 0: voltar no menu principal");
 				}
+				System.out.print("Choise:");
 			 if(Integer.parseInt(scanner.nextLine()) == 1)
-				 return true;
+				 return false; /*it will not go ahead it will stay in the cadatro menu*/
 			 
 			 }
 		  }
 				  
 //		 scanner.close();
-			return false;
+			return true;
 		}
 
 
@@ -434,20 +481,21 @@ public class Main {
 	private static int printMainMenu(int GID) {
 		
 		if(GID == 1) {
-		System.out.println("Menu Principal:");
+		System.out.println("                               Menu Principal \n\n");
 		System.out.println("");
 		System.out.println("1 - Cadastrar um novo usuário");
 		System.out.println("2 – Alterar senha pessoal e certificado digital do usuário");
 		System.out.println("3 – Consultar pasta de arquivos secretos do usuário");
 		System.out.println("4 – Sair do Sistema");
 		}else {
-			System.out.println("Menu Principal:");
-			System.out.println("");
+			System.out.println("                           Menu Principal\n\n");
+		
 		
 			System.out.println("1 – Alterar senha pessoal e certificado digital do usuário");
 			System.out.println("2 – Consultar pasta de arquivos secretos do usuário");
 			System.out.println("3 – Sair do Sistema");
 		}
+		System.out.println(" Make a choice: ");
 		Scanner scanner = new Scanner(System.in);
 		String result = new String(scanner.nextLine());
 //		scanner.close();
