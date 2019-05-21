@@ -153,64 +153,75 @@ public class Main {
 	
 	private static void thirdStep(User u) throws SQLException {
 		
-		
+		int GID =u.getGID();
+		printHeader(u);
 		/*verification of private key*/
 		try {
 				/* show interface for group and usuarios*/
-				int GID =u.getGID();
-				  printHeader(u);
+				
+				 
 				  /*here the possible arquives will be memorized */
 				  HashMap<Integer,Arquive> files = new HashMap<>();
 				
 					/*admin interface and possible while*/
 					printBodyOne(u);
-					int option =printMainMenu();
+					int option =printMainMenu(GID);
 					boolean ahead= false;
-				switch(option) {
-					case 1:
-						while(!ahead) {
-							printHeader(u);
-							printBodyOne(u);
-							try {
-								ahead = printRegisterUser();
-							} catch (NoSuchAlgorithmException e) {
-								ahead = false;
-								e.printStackTrace();
-							}
-						}
-						;
-					case 2:
-						printHeader(u);
-						printBodyOne(u);
-						try {
-							printOptionTwo(u);
-						} catch (NoSuchAlgorithmException e) {
-							
-							e.printStackTrace();
-						}
-						/*going back to main menu*/
-						;
-					case 3:
-						printHeader(u);
-						//printBodyOneVersion2(u);
-						printOptionThree(u, files);
-						/*how do I calculate consultas*/
-						;
-					case 4:
-						/*go to login page*/
-						;
-				}
-				
+					if(GID == 1) {
+						adminInterface(option,u,files);
+					}else {
 					/*user interface*/
-//					printBodyOne(u,GID);
-//					printBodyTwo(GID);
-					
+						userInterface(option,u,files);
+					}
 				} catch (CertificateException | InvalidNameException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 					}
 	}
 
+	private static void adminInterface(int option, User u, HashMap<Integer, Arquive> files2) {
+		HashMap<Integer,Arquive> files = new HashMap<>();
+		boolean ahead = false;
+		switch(option) {
+		case 1:
+			while(!ahead) {
+				printHeader(u);
+				printBodyOne(u);
+				try {
+					ahead = printRegisterUser();
+				} catch (NoSuchAlgorithmException e) {
+					ahead = false;
+					e.printStackTrace();
+				}
+			}
+			;
+		case 2:
+			printHeader(u);
+			printBodyOne(u);
+			try {
+				printOptionTwo(u);
+			} catch (NoSuchAlgorithmException e) {
+				
+				e.printStackTrace();
+			}
+			/*going back to main menu*/
+			;
+		case 3:
+			printHeader(u);
+			//printBodyOneVersion2(u);
+			printOptionThree(u, files);
+			/*how do I calculate consultas*/
+			;
+		case 4:
+			/*go to login page*/
+			;
+	}
+	}
+	
+	private static void userInterface(int option, User u, HashMap<Integer, Arquive> files) {
+		
+		
+	}
 
 	private static void printOptionThree(User u, HashMap<Integer, Arquive> files) {
 		Scanner sc= new Scanner(System.in);
@@ -420,14 +431,23 @@ public class Main {
 		}
 
 
-	private static int printMainMenu() {
+	private static int printMainMenu(int GID) {
 		
+		if(GID == 1) {
 		System.out.println("Menu Principal:");
 		System.out.println("");
 		System.out.println("1 - Cadastrar um novo usuário");
 		System.out.println("2 – Alterar senha pessoal e certificado digital do usuário");
 		System.out.println("3 – Consultar pasta de arquivos secretos do usuário");
 		System.out.println("4 – Sair do Sistema");
+		}else {
+			System.out.println("Menu Principal:");
+			System.out.println("");
+		
+			System.out.println("1 – Alterar senha pessoal e certificado digital do usuário");
+			System.out.println("2 – Consultar pasta de arquivos secretos do usuário");
+			System.out.println("3 – Sair do Sistema");
+		}
 		Scanner scanner = new Scanner(System.in);
 		String result = new String(scanner.nextLine());
 //		scanner.close();
@@ -435,7 +455,7 @@ public class Main {
 	}
 
 
-	private static void printBodyOne(User u) {
+	private static void printTotalAccess(User u) {
 		System.out.println("Total access: "+ u.getAccess());
 	}
 

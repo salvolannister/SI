@@ -98,6 +98,7 @@ public class PrivateKeyVerification {
 						
 					}
 					else {
+						System.out.println("Signature is not valid");
 						return state;
 					}
 				} catch (InvalidKeySpecException e) {
@@ -107,7 +108,8 @@ public class PrivateKeyVerification {
 			} catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException
 					| UnsupportedEncodingException e) {
 				
-				System.out.println("PrivateKey is invalid or there is a problem with padding ");
+				System.out.println("PrivateKey is invalid: secret phrase is wrong or the file .pem "
+						           + "is not the correct one");
 				//e.printStackTrace();
 			}
 		} catch (NoSuchAlgorithmException e) {
