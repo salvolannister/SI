@@ -60,7 +60,7 @@ public class PasswordChecker {
 			}
 			if(n == 5) {
 				finished =true;
-				
+				System.out.println("Password must be between six and eight digits");
 			}
 				else {
 					tmp.add(buttons.get(n).get(0));
@@ -76,6 +76,7 @@ public class PasswordChecker {
 					
 				}
 		}
+		if(x > 8)  System.out.println("Password must be between six and eight digits");
 //		scanner.close();
 		return digited;
 	}

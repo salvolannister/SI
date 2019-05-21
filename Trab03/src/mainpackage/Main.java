@@ -9,7 +9,10 @@ import java.security.NoSuchProviderException;
 import java.security.SignatureException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Scanner;
 
@@ -49,8 +52,7 @@ public class Main {
 						int block = u.getBlock();
 						
 						if(block == 0) {
-							
-						tryLog(u);
+							tryLog(u);
 						}
 						else {
 							if(checkTime(u)) {
@@ -88,9 +90,11 @@ public class Main {
 		//System.out.println("Checking time, now: "+dataNow );
 		String time =u.getTime();
 		LocalDateTime dateBlocked = LocalDateTime.parse(time, DateTimeFormatter.ISO_DATE_TIME);
-		int diff = dateTime.getMinute() - dateBlocked.getMinute();
+		ZoneOffset zoneOffSet= ZoneOffset.of("+02:00");
+		long diff = dateTime.toEpochSecond(zoneOffSet)-dateBlocked.toEpochSecond(zoneOffSet);
 	
-		return diff>2;
+		
+		return diff>140;
 	}
 
 
@@ -108,65 +112,33 @@ public class Main {
 						   );			
 			}
 //		ArrayList<ArrayList<String>> digited =PasswordChecker.RequestForPassword();
+		/* to be added <5 */
+//		if(digited.size()>8 ) valid  =false;
+//		else {
 //		valid = PasswordChecker.isPasswordValid(digited,values[1],values[0]);
+//		}
 		u.addAttempt(); /* maybe this should be moved elsewhere*/
 		count ++;
 		valid = true;
 		}
 			/*password is correct*/
 			if(valid) {
-				/*3 ETAPA add one access*/
+				
 				count = 0;
 				u.addAccess();
 				/*verification of private key*/
+				
 				try {
 					privateKeyVerification(u);
-					if(u.getBlock() == 0) {
-						/* show interface for group and usuarios*/
-						int GID =u.getGID();
-						  printHeader(u);
-						  /*here the possible arquives will be memorized */
-						  HashMap<Integer,Arquive> files = new HashMap<>();
-						if(GID == 1) {
-							/*admin interface and possible while*/
-							printBodyOne(u);
-							int option =printMainMenu();
-							boolean ahead= false;
-							switch(option) {
-							case 1:
-								while(!ahead) {
-									printHeader(u);
-									printBodyOne(u);
-									ahead = printRegisterUser();
-								}
-								;
-							case 2:
-								printHeader(u);
-								printBodyOne(u);
-								printOptionTwo(u);
-								/*going back to main menu*/
-								;
-							case 3:
-								printHeader(u);
-								//printBodyOneVersion2(u);
-								printOptionThree(u, files);
-								/*how do I calculate consultas*/
-								;
-							case 4:
-								/*go to login page*/
-								;
-							}
-						}else {
-							/*user interface*/
-//							printBodyOne(u,GID);
-//							printBodyTwo(GID);
-						}
-					
-					}
-				} catch (CertificateException | InvalidNameException e) {
+				} catch (CertificateException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				/*3 ETAPA add one access*/
+				if(u.getBlock()==0)
+					{
+					thirdStep(u);
+					}
 			
 			}else {
 				/*block user*/
@@ -178,6 +150,66 @@ public class Main {
 		
 		
 	}
+	
+	private static void thirdStep(User u) throws SQLException {
+		
+		
+		/*verification of private key*/
+		try {
+				/* show interface for group and usuarios*/
+				int GID =u.getGID();
+				  printHeader(u);
+				  /*here the possible arquives will be memorized */
+				  HashMap<Integer,Arquive> files = new HashMap<>();
+				
+					/*admin interface and possible while*/
+					printBodyOne(u);
+					int option =printMainMenu();
+					boolean ahead= false;
+				switch(option) {
+					case 1:
+						while(!ahead) {
+							printHeader(u);
+							printBodyOne(u);
+							try {
+								ahead = printRegisterUser();
+							} catch (NoSuchAlgorithmException e) {
+								ahead = false;
+								e.printStackTrace();
+							}
+						}
+						;
+					case 2:
+						printHeader(u);
+						printBodyOne(u);
+						try {
+							printOptionTwo(u);
+						} catch (NoSuchAlgorithmException e) {
+							
+							e.printStackTrace();
+						}
+						/*going back to main menu*/
+						;
+					case 3:
+						printHeader(u);
+						//printBodyOneVersion2(u);
+						printOptionThree(u, files);
+						/*how do I calculate consultas*/
+						;
+					case 4:
+						/*go to login page*/
+						;
+				}
+				
+					/*user interface*/
+//					printBodyOne(u,GID);
+//					printBodyTwo(GID);
+					
+				} catch (CertificateException | InvalidNameException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					}
+	}
 
 
 	private static void printOptionThree(User u, HashMap<Integer, Arquive> files) {
@@ -188,7 +220,7 @@ public class Main {
 		System.out.print("\n\nPress 2 to decrypt pasta do arquivio ");
 		
 		/*show different files of the user*/
-		System.out.print("\n\nPress 0 for going back to MainPage:);");
+		System.out.print("\n\nPress 0 for going back to MainPage:");
 		int dec= Integer.parseInt(sc.nextLine());
 			if(dec == 0) {
 				return;
@@ -198,17 +230,18 @@ public class Main {
 				DecryptArquive Da = new DecryptArquive(path+"index", u.getPrk(),u.getPub());
 				try {
 						/* decrypting index*/
-						byte [] arquiveText = Da.decrypt();
+					byte [] arquiveText = Da.decrypt();
+					if(arquiveText!= null) {
 						String content = new String(arquiveText, "UTF-8");
 						//System.out.println(content);
 						
 						String[] contentLines = content.split("\n");
 						
 						for(int i = 0; i<contentLines.length;i++) {
-							System.out.println("Press "+(i+1)+"to access "+contentLines[i]);
+							System.out.println("Press "+(i+1)+" to access "+contentLines[i]);
 							files.put(i, new Arquive (contentLines[i]));
 						}
-						System.out.println("\n\nPress 0 to exit");
+						System.out.println("\n\nPress 0 to exit:");
 						
 						dec =Integer.parseInt(sc.nextLine());
 							if(dec!=0) {
@@ -233,7 +266,7 @@ public class Main {
 								}
 							}
 						
-						
+					}
 						} catch (UnsupportedEncodingException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
@@ -241,8 +274,9 @@ public class Main {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-					
-			}
+				}
+				
+			
 //			sc.close();
 		return;
 	}
@@ -419,11 +453,12 @@ public class Main {
 		int attempt = 0;
 		boolean OK = false;
 		Scanner scanner = new Scanner(System.in);
+		u.setAttempt(0);
 		while(attempt< 3  && !OK) {
 			String str = new String();
 			System.out.print("###################################################\n"+
 					   "Working Directory is"+ System.getProperty("user.dir")+		   
-					   "\n	Bynary file path:");
+					   "\n	Binary file path:");
 			str = scanner.nextLine();
 			String binFilepath = new String (str);
 			System.out.print("###################################################\n"+
@@ -436,6 +471,8 @@ public class Main {
 //			String certifPath = new String (scanner.nextLine());
 			
 			OK = PrivateKeyVerification.CheckPrivateKey(new String[] {binFilepath,secretPhrase}, u);
+			u.addAttempt();
+			attempt ++ ;
 		}
 		if(!OK) {
 			System.out.print("###################################################\n"+

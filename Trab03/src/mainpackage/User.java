@@ -65,8 +65,10 @@ public class User {
 		certificate = rs.getBytes("certificate");
 		this.email = email;
 		name = rs.getString("name");
+		rs.close();
 		rs = Database.getGroupName(GID);
 		groupName=rs.getString(1);
+		rs.close();
 	}
 	
 	public String getEmail() {

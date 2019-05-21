@@ -68,8 +68,8 @@ public class PrivateKeyVerification {
 					try {
 						state = CheckSignature(privateKey,certificate);
 					} catch (SignatureException | CertificateException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+						System.out.println(" Signature is not valid");
+						return state;
 					}
 					if(state) {
 						System.out.println("digital sig verification:"+ state);
@@ -186,12 +186,16 @@ public class PrivateKeyVerification {
 		return null;
 	}
 
-	public static byte[] decryptDES(Key k,  Cipher cipher,byte[] cipherText) throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException {
+	public static byte[] decryptDES(Key k,  Cipher cipher,byte[] cipherText) throws IllegalBlockSizeException, BadPaddingException, UnsupportedEncodingException  {
 	
-		cipher.init(Cipher.DECRYPT_MODE, k);
+		try {
+			cipher.init(Cipher.DECRYPT_MODE, k);
+		} catch (InvalidKeyException e) {
+			System.out.println("Secret Key is wrong");
+		}
 		byte[] newPlainText = cipher.doFinal(cipherText);
-		System.out.println( "Finish decryption: " );
-		System.out.println( new String(newPlainText, "UTF8") );
+//		System.out.println( "Finish decryption: " );
+//		System.out.println( new String(newPlainText, "UTF-8") );
 		return newPlainText;
 	}
 

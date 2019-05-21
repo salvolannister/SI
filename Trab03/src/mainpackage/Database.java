@@ -20,10 +20,10 @@ public class Database {
 
        try {
 		Database.connection = DriverManager.getConnection(url);
-	} catch (SQLException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 	
@@ -72,7 +72,6 @@ public class Database {
 		String sql = "SELECT * FROM userdata WHERE email =?";
 		PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
         preparedStatement.setString(1, email2);
-
         ResultSet resultSet = preparedStatement.executeQuery();
 		return resultSet;
 		

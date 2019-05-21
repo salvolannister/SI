@@ -80,7 +80,7 @@ public class DecryptArquive {
 				return fileText;
 			    }
 			    else {
-			    	System.out.println("Signature is wrong");
+			    	System.out.println("Signature and Integrity problem");
 			    	return null;
 			    }
 			} catch (InvalidKeyException e) {
@@ -89,10 +89,11 @@ public class DecryptArquive {
 				
 			} catch (IllegalBlockSizeException e) {
 				System.out.println("Block size is wrong cipher.dofinal didn't work");
-				e.printStackTrace();
+//				e.printStackTrace();
+				return null;
 			} catch (BadPaddingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				System.out.println("Bad padding format or wrong PrivateKey");
+//				e.printStackTrace();
 				return null;
 			}
 			
@@ -102,7 +103,7 @@ public class DecryptArquive {
 			System.out.println("Algorithm or Padding error in cipher decrypting the envelope");
 			return null;
 		}
-		return null;	
+	
 	}
 
 }
