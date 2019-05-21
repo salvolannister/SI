@@ -2,7 +2,6 @@ package mainpackage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.security.Principal;
 import java.sql.SQLException;
 
 import javax.naming.InvalidNameException;
@@ -17,7 +16,7 @@ public class Arquives {
 		System.out.println("lendo" +pFile.toString());
 		if(Files.exists(pFile) == false) {
 			System.err.print("FILE DOESN'T EXIST, EXITING \n");
-			System.exit(2);
+			return null;
 		}
 		
 		try {

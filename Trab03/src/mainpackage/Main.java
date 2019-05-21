@@ -36,17 +36,22 @@ public class Main {
 							   "		      LOGIN PAGE\n"+		   
 							   "			 email:");
 			String email = new String (scanner.nextLine());
+			Database.addLog(1001);
+			Database.addLog(2001);
 			User u = new User() ;
 			/* check from the db if the email is valid or not */
 				try {
 					boolean alreadyExist= Database.checkUserExistence(email) ;
 					/* scoprire come leggere un resultSEt senzza che dia errore*/
 					if(!alreadyExist) {
+						Database.addLog(2005,u.getEmail());
 						System.out.println("You are not registred, ask the admin to register. conitnue:0 exit:1");
 						String choice = new String(scanner.nextLine());
 							if(choice.equals("1")) {
 								exit = true;
 								System.out.println("                       GOODBYE");
+								Database.addLog(1002);
+								Database.addLog(2002);
 							}
 					}else {
 						/* crea instance di user*/
@@ -54,14 +59,19 @@ public class Main {
 						int block = u.getBlock();
 						
 						if(block == 0) {
+							Database.addLog(2002);
+							Database.addLog(2003,u.getEmail());
 							tryLog(u);
 						}
 						else {
+							
 							if(checkTime(u)) {
+								Database.addLog(2002);
 								u.block(0);
 								u.setAttempt(0);
 								tryLog(u);
 							}else {
+								Database.addLog(2003,u.getEmail());
 								System.out.println("You are still blocked");
 							}
 						}
@@ -102,7 +112,7 @@ public class Main {
 
 	private static void tryLog(User u ) throws SQLException, NoSuchAlgorithmException {
 	/* read the password and check if it is correct*/
-	
+	Database.addLog(3001,u.getEmail());
 	boolean valid =false;
 	int count = u.getAttempt();
 	String[] values = u.getPandS();
@@ -113,21 +123,34 @@ public class Main {
 						         "           Wrong password, try again\n"	   
 						   );			
 			}
-//		ArrayList<ArrayList<String>> digited =PasswordChecker.RequestForPassword();
-//		/* to be added <5 */
-//		if(digited.size()>8 || digited.size()<6 ) {
-//			System.out.println("Password must be length must be between 8 and 6 digits");
-//			valid  =false;
-//		}
-//		else {
-//		valid = PasswordChecker.isPasswordValid(digited,values[1],values[0]);
-//		}
+		ArrayList<ArrayList<String>> digited =PasswordChecker.RequestForPassword();
+		/* to be added <5 */
+		if(digited.size()>8 || digited.size()<6 ) {
+			System.out.println("Password must be length must be between 8 and 6 digits");
+			valid  =false;
+			
+		}
+		else {
+		valid = PasswordChecker.isPasswordValid(digited,values[1],values[0]);
+		}
 		u.addAttempt(); /* maybe this should be moved elsewhere*/
 		count ++;
-		valid = true;
+		if(valid == false) {
+			switch(count) {
+			case 1:
+				Database.addLog(3004,u.getEmail());
+			case 2:
+				Database.addLog(3005,u.getEmail());
+			case 3:
+				Database.addLog(3006,u.getEmail());
+			}
+		}
+		//valid = true;
 		}
 			/*password is correct*/
 			if(valid) {
+				Database.addLog(3002,u.getEmail());
+				Database.addLog(3003,u.getEmail());
 				
 				count = 0;
 				u.addAccess();
@@ -135,6 +158,7 @@ public class Main {
 				
 				try {
 					/*3 ETAPA privateKey verification*/
+					Database.addLog(4001,u.getEmail());
 					privateKeyVerification(u);
 				} catch (CertificateException e) {
 					// TODO Auto-generated catch block
@@ -144,11 +168,15 @@ public class Main {
 				if(u.getBlock()==0)
 					{
 					/*interface moment*/
+					Database.addLog(4002,u.getEmail());
+					Database.addLog(4003,u.getEmail());
 					thirdStep(u);
 					}
 			
 			}else {
 				/*block user*/
+				Database.addLog(3002,u.getEmail());
+				Database.addLog(3007,u.getEmail());
 				System.out.print("###################################################\n"+
 						   		 "You have been blocked wait 2 minutes and try again\n" );
 				u.block(1);
@@ -174,6 +202,7 @@ public class Main {
 				 
 					printTotalAccess(u);
 						int option =printMainMenu(GID);
+						Database.addLog(5001,u.getEmail());
 						/* show interface for group and usuarios*/
 						if(GID == 1) {
 							decision =adminInterface(option,u,files);
@@ -189,6 +218,7 @@ public class Main {
 		boolean ahead = false;
 			switch(option) {
 			case 1:
+				Database.addLog(5001,u.getEmail());
 				while(!ahead) {
 					printHeader(u);
 					printTotalUser();
@@ -207,6 +237,7 @@ public class Main {
 				}
 				return 1;
 			case 2:
+				Database.addLog(5002,u.getEmail());
 				printHeader(u);
 				printTotalAccess(u);
 				try {
@@ -219,6 +250,7 @@ public class Main {
 				/*going back to main menu*/
 				
 			case 3:
+				Database.addLog(5003,u.getEmail());
 				printHeader(u);
 				//printBodyOneVersion2(u);
 				printOptionPasta(u, files2);
@@ -226,6 +258,7 @@ public class Main {
 				;
 			case 4:
 				/*go to login page*/
+				Database.addLog(5004,u.getEmail());
 				printHeader(u);
 				printTotalAccess(u);
 				return printExitInteface();
@@ -254,6 +287,7 @@ public class Main {
 		boolean continuar = true;
 		switch(option) {
 		case 1:
+				Database.addLog(5001,u.getEmail());
 				printHeader(u);
 				printTotalAccess(u);
 			try {
@@ -266,7 +300,7 @@ public class Main {
 			
 			return 1;
 		case 2:
-			
+			Database.addLog(5002,u.getEmail());
 			while(continuar) {
 				printHeader(u);
 			/*Body2 :how do I calculate consultas*/
@@ -274,6 +308,7 @@ public class Main {
 			}
 			return 1;
 		case 3:
+			Database.addLog(5003,u.getEmail());
 			printHeader(u);
 			printTotalAccess(u);
 			return printExitInteface();
@@ -286,6 +321,11 @@ public class Main {
 		System.out.println("                                GOODBYE");
 		System.out.println("Press 0 to exit or 1 to go to MainMenu:");
 		int d=  Integer.parseInt(sc.nextLine());
+		if(d == 0) {
+			Database.addLog(1002);
+			System.out.println("                            BYE,BYE");
+			System.exit(0);
+		}
 		return d;
 	}
 
@@ -578,6 +618,7 @@ public class Main {
 			attempt ++ ;
 		}
 		if(!OK) {
+			Database.addLog(4007,u.getEmail());
 			System.out.print("###################################################\n"+
 					   "You have been blocked, wait 2 minutes and try again\n" );
 			u.block(1);

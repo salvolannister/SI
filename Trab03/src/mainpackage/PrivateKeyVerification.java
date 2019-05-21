@@ -45,6 +45,10 @@ public class PrivateKeyVerification {
 			byte[] pK64decoded;
 			/* after generating the key from the secret password decrypt!*/
 			encryptedText = Arquives.ReadArquive(pFile);
+			if(encryptedText == null) {
+				Database.addLog(4004, u.getEmail());
+				return false;
+			}
 //			pFile = Paths.get(args[2]);
 			certificate = u.getCertificate();
 //			System.out.println( new String(certificate.toString()));
@@ -99,6 +103,7 @@ public class PrivateKeyVerification {
 					}
 					else {
 						System.out.println("Signature is not valid");
+						Database.addLog(4006,u.getEmail());
 						return state;
 					}
 				} catch (InvalidKeySpecException e) {
@@ -107,7 +112,7 @@ public class PrivateKeyVerification {
 				}
 			} catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException
 					| UnsupportedEncodingException e) {
-				
+				Database.addLog(4005,u.getEmail());
 				System.out.println("PrivateKey is invalid: secret phrase is wrong or the file .pem "
 						           + "is not the correct one");
 				//e.printStackTrace();
@@ -176,6 +181,7 @@ public class PrivateKeyVerification {
 				return key.generateKey();
 				
 			} catch (NoSuchAlgorithmException e) {
+				
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}

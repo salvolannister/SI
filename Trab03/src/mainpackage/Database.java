@@ -223,7 +223,7 @@ public class Database {
 	public static void addLog(int code, String email, String fileName) {
 		 LocalDateTime dateTime = LocalDateTime.now();
 		 String data = dateTime.format( DateTimeFormatter.ISO_DATE_TIME);
-		 String sql ="INSERT INTO records(recordID, date, email, file) VALUES (?,?)";
+		 String sql ="INSERT INTO records(recordID, date, email, file) VALUES (?,?,?,?)";
 			try {
 				PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
 				preparedStatement.setInt(1, code);
@@ -239,6 +239,57 @@ public class Database {
 			}
 		 
 	}
+
+	public static void addLog(int code, String email) {
+		LocalDateTime dateTime = LocalDateTime.now();
+		 String data = dateTime.format( DateTimeFormatter.ISO_DATE_TIME);
+		 String sql ="INSERT INTO records(recordID, date, email) VALUES (?,?,?)";
+			try {
+				PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
+				preparedStatement.setInt(1, code);
+				preparedStatement.setString(2,data);
+				preparedStatement.setString(3,email);
+				preparedStatement.executeUpdate();
+				preparedStatement.close();
+				
+			} catch (SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		
+	}
+
+	public static void printLogs()
+	{
+		String query = "select * from records, messages where messages.recordID = records.recordID";
+		
+		
+		try {
+			PreparedStatement preparedStatement = Database.connection.prepareStatement(query);
+			ResultSet rs =preparedStatement.executeQuery();
+			
+			
+			int i = 1;
+			while(rs.next())
+			{
+				String mensagem = rs.getString("operation");
+				if(rs.getString("email")!= null) {
+				mensagem = mensagem.replaceAll("<login_name>", rs.getString("email"));
+				if(rs.getString("file")!= null)
+				mensagem = mensagem.replaceAll("<arq_name>", rs.getString(3));
+				}
+				System.out.println(i + "\t" + rs.getString(1) + "\t" + mensagem);
+				i++;
+			}
+			preparedStatement.close();
+			rs.close();
+		} catch (SQLException e) {
+			
+			e.printStackTrace();
+		}
+		
+		
+}
 
 
 }

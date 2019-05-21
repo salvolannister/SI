@@ -47,6 +47,10 @@ public class DecryptArquive {
 			try {
 				cipher.init(Cipher.DECRYPT_MODE, k);
 				byte[] cipherText = Arquives.ReadArquive(pEnv);
+				if(cipherText == null) {
+					System.out.println("Caminho invalido");
+					return null;
+				}
 				byte[] seed = cipher.doFinal(cipherText);
 				byte[] encText; 
 				byte[] signatureText;	
