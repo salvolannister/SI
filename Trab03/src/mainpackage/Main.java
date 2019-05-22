@@ -45,7 +45,7 @@ public class Main {
 					boolean alreadyExist= Database.checkUserExistence(email) ;
 					/* scoprire come leggere un resultSEt senzza che dia errore*/
 					if(!alreadyExist) {
-						Database.addLog(2005,u.getEmail());
+						Database.addLog(2005,email);
 						System.out.println("You are not registred, ask the admin to be registered. conitnue:0 exit:1");
 						String choice = new String(scanner.nextLine());
 							if(choice.equals("1")) {
@@ -60,21 +60,22 @@ public class Main {
 						int block = u.getBlock();
 						
 						if(block == 0) {
-							Database.addLog(2002);
 							Database.addLog(2003,u.getEmail());
+							Database.addLog(2002);
+							
 							tryLog(u);
 						}
 						else {
 							
 							if(checkTime(u)) {
-								System.out.println("hereee");
+								Database.addLog(2003,u.getEmail());
 								Database.addLog(2002);
 								u.block(0);
 								u.setBlock(0);
 								u.setAttempt(0);
 								tryLog(u);
 							}else {
-								Database.addLog(2003,u.getEmail());
+								Database.addLog(2004,u.getEmail());
 								System.out.println("You are still blocked");
 							}
 						}
@@ -153,8 +154,9 @@ public class Main {
 		}
 			/*password is correct*/
 			if(valid) {
-				Database.addLog(3002,u.getEmail());
 				Database.addLog(3003,u.getEmail());
+				Database.addLog(3002,u.getEmail());
+				
 				
 				count = 0;
 				u.addAccess();
@@ -172,19 +174,26 @@ public class Main {
 				if(u.getBlock()== 0)
 					{
 					/*interface moment*/
-					Database.addLog(4002,u.getEmail());
+					
 					Database.addLog(4003,u.getEmail());
+					Database.addLog(4002,u.getEmail());
 					thirdStep(u);
+					}else {
+					
+						Database.addLog(4002,u.getEmail());
+						return;
 					}
 			
 			}else {
 				/*block user*/
-				Database.addLog(3002,u.getEmail());
 				Database.addLog(3007,u.getEmail());
+				Database.addLog(3002,u.getEmail());
+				
 				System.out.print("###################################################\n"+
 						   		 "You have been blocked wait 2 minutes and try again\n" );
 				u.block(1);
 				u.setBlock(1);
+				return;
 			}
 		
 		
@@ -247,7 +256,7 @@ public class Main {
 				printTotalAccess(u);
 				try {
 					Database.addLog(7001, u.getEmail());
-					printOptionPassword(u);
+					while(printOptionPassword(u));
 				} catch (NoSuchAlgorithmException | SQLException e) {
 					
 					e.printStackTrace();
@@ -267,7 +276,7 @@ public class Main {
 				Database.addLog(5005,u.getEmail());
 				printHeader(u);
 				printTotalAccess(u);
-				return printExitInteface();
+				return printExitInteface(u);
 				
 				
 		}
@@ -299,7 +308,7 @@ public class Main {
 			try {
 				/*option two is option 1 for user*/
 				Database.addLog(7001, u.getEmail());
-				printOptionPassword(u);
+				while(printOptionPassword(u));
 			} catch (NoSuchAlgorithmException | SQLException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -318,21 +327,24 @@ public class Main {
 			Database.addLog(5003,u.getEmail());
 			printHeader(u);
 			printTotalAccess(u);
-			return printExitInteface();
+			return printExitInteface(u);
 	}
 		return 0;
 	}
 
-	private static int printExitInteface() {
+	private static int printExitInteface(User u) {
+		Database.addLog(9001, u.getEmail());
 		Scanner sc = new Scanner(System.in);
 		System.out.println("                                GOODBYE");
 		System.out.println("Press 0 to exit or 1 to go to MainMenu:");
 		int d=  Integer.parseInt(sc.nextLine());
 		if(d == 0) {
+			Database.addLog(9003,u.getEmail());
 			Database.addLog(1002);
 			System.out.println("                            BYE,BYE");
 			System.exit(0);
 		}
+		Database.addLog(9004,u.getEmail());
 		return d;
 	}
 
@@ -359,12 +371,13 @@ public class Main {
 				return false;
 			}else {
 				Database.addLog(8003, u.getEmail());
-				/*controll validity of path after*/
-				DecryptArquive Da = new DecryptArquive(path+"index", u.getPrk(),u.getPub());
+				
+				DecryptArquive Da = new DecryptArquive(path+"index", u.getPrk(),u.getPub(),0, u);
 				try {
 						/* decrypting index*/
 					byte [] arquiveText = Da.decrypt();
 					if(arquiveText!= null) {
+						Database.addLog(8009, u.getEmail());
 						String content = new String(arquiveText, "UTF-8");
 						//System.out.println(content);
 						Database.addLog(8005, u.getEmail());
@@ -379,12 +392,13 @@ public class Main {
 						dec =Integer.parseInt(sc.nextLine());
 							if(dec!=0) {
 								Arquive p = files.get(dec-1);
+								Database.addLog(8010, u.getEmail(),p.getName());
 								/*if the user is not enabled ... do something*/
 								int gid = getGID(p.getGroupName());
 								if(p.getDono().equals(u.getEmail()) || u.getGID() ==gid) {
 									/* the owner can read is file*/
-									
-									Da = new DecryptArquive(path+p.getName(), u.getPrk(),u.getPub());
+									Database.addLog(8011, u.getEmail(),p.getName());
+									Da = new DecryptArquive(path+p.getName(), u.getPrk(),u.getPub(),1,u);
 									/* notificare la presenza di alcuni errori mentre si decripta*/
 									byte[] byteContent = Da.decrypt();
 									if(byteContent != null) {
@@ -402,6 +416,7 @@ public class Main {
 									/* what now? stay on the page? YES*/
 								}else {
 									System.out.println("you can't access this file");
+									Database.addLog(8012, u.getEmail(),p.getName());
 									/* what now? stay on the page? */
 								}
 								System.out.println("\n\nPress 0 to exit or 1 to continue reading:");
@@ -437,7 +452,7 @@ public class Main {
 	}
 
 
-	private static void printOptionPassword(User u) throws NoSuchAlgorithmException, SQLException {
+	private static boolean printOptionPassword(User u) throws NoSuchAlgorithmException, SQLException {
 		Scanner sc = new Scanner(System.in);
 		String password = new String() ;
 		boolean OK = false;
@@ -453,22 +468,42 @@ public class Main {
 		System.out.print("\n– Senha pessoal:");
 	   // String password = PasswordChecker.readPassword("– Senha pessoal: ");
 		 password = sc.nextLine();
-		checkPassword(password);
+		OK =checkPassword(password);
+		if(OK) {
+			
 		System.out.print("\n–Confirm senha pessoal:");
 		String checkPassword = sc.nextLine();
 		
 			if(checkPassword.equals(password)) {
-				Database.addLog(7002, u.getEmail());
-				Database.addLog(7005, u.getEmail());
+				
+				Database.addLog(7004, u.getEmail());
 				OK = true;
+			
+			}else {
+				Database.addLog(7005, u.getEmail());
+				System.out.println("The two passwords don't correspond");
+				OK = false;
 			}
+		}else {
+			Database.addLog(7002, u.getEmail());
+			System.out.println("---try again---");
 		}
-		Database.addLog(7004, u.getEmail()); 
-		Database.updatePassword(u, password, path);
-//			
-		System.out.println("Going back to Main Menu");
 		
-//		sc.close();
+		}
+		
+		Database.updatePassword(u, password, path);
+		Scanner scanner = new Scanner(System.in);	
+		System.out.println("Going back to Main Menu");
+		 System.out.println("Press 1 para continuar Press 0 para voltar no menu principal");
+		  
+		int n = Integer.parseInt(scanner .nextLine());
+		  if(n == 1) {
+			  return true;
+		  }else {
+			  Database.addLog(7006, u.getEmail());
+			  return false;
+		  }
+//		
 	}
 
 
@@ -516,8 +551,8 @@ public class Main {
 		  System.out.println("Press 1 para continuar Press 0 para voltar no menu principal");
 		  int n = Integer.parseInt(scanner.nextLine());
 		  if(n == 1) {
-			 
-			  System.out.print("###################################################\n");
+			 Database.addLog(6002, u.getEmail());
+			 System.out.print("###################################################\n");
 			  
 			  /* instead of receving a String values, the best way could be using a class*/
 			 X509Certificate x509Certificate = X509Certificate.getInstance(certificate);
@@ -556,11 +591,14 @@ public class Main {
 			 if(Integer.parseInt(scanner.nextLine()) == 1)
 				 return false; /*it will not go ahead it will stay in the cadatro menu*/
 			 
+			 }else {
+				 Database.addLog(6007, values[5]);
+				 return true;
 			 }
 		  }
 				  
 //		 scanner.close();
-		  	Database.addLog(6007, values[5]);
+		  	
 			return true;
 		}
 
@@ -647,6 +685,18 @@ public class Main {
 					   "\n	Binary file path:");
 			str = scanner.nextLine();
 			String binFilepath = new String (str);
+			
+			while(Files.exists(Paths.get(binFilepath)) == false) {
+				System.err.print("FILE DOESN'T EXIST, try again \n");
+				System.out.print("###################################################\n"+
+						   "Working Directory is"+ System.getProperty("user.dir")+		   
+						   "\n	Binary file path:");
+				str = scanner.nextLine();
+			    binFilepath = new String (str);
+			    Database.addLog(4004,u.getEmail());
+			}
+			
+			
 			System.out.print("###################################################\n"+
 					   "password:");	   
 			String secretPhrase = new String (scanner.nextLine());

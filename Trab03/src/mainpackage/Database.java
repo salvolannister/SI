@@ -206,11 +206,13 @@ public class Database {
 	public static void addLog(int code) {
 		 LocalDateTime dateTime = LocalDateTime.now();
 		 String data = dateTime.format( DateTimeFormatter.ISO_DATE_TIME);
-		 String sql ="INSERT INTO records(recordID, date) VALUES (?,?)";
+		 String sql ="INSERT INTO records(recordID, date, id) VALUES (?,?,?)";
+		 int ID = getMaxID();
 			try {
 				PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
 				preparedStatement.setInt(1, code);
 				preparedStatement.setString(2,data);
+				preparedStatement.setInt(3, ID+1);
 				preparedStatement.executeUpdate();
 				preparedStatement.close();
 				
@@ -232,7 +234,7 @@ public class Database {
 				preparedStatement.setString(2,data);
 				preparedStatement.setString(3,email);
 				preparedStatement.setString(4,email);
-				preparedStatement.setInt(5, maxID);
+				preparedStatement.setInt(5, maxID+1);
 				preparedStatement.executeUpdate();
 				preparedStatement.close();
 				
@@ -253,7 +255,7 @@ public class Database {
 				preparedStatement.setInt(1, code);
 				preparedStatement.setString(2,data);
 				preparedStatement.setString(3,email);
-				preparedStatement.setInt(4, maxID);
+				preparedStatement.setInt(4, maxID+1);
 				preparedStatement.executeUpdate();
 				preparedStatement.close();
 				
