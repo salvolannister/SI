@@ -109,6 +109,7 @@ public class PrivateKeyVerification {
 				} catch (InvalidKeySpecException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+					return false;
 				}
 			} catch (InvalidKeyException | IllegalBlockSizeException | BadPaddingException
 					| UnsupportedEncodingException e) {
@@ -116,13 +117,16 @@ public class PrivateKeyVerification {
 				System.out.println("PrivateKey is invalid: secret phrase is wrong or the file .pem "
 						           + "is not the correct one");
 				//e.printStackTrace();
+				return false;
 			}
 		} catch (NoSuchAlgorithmException e) {
 			System.out.println("You can't use this algorithm");
-			e.printStackTrace();
+			return false;
+		
 		} catch (NoSuchPaddingException e) {
 			
 			e.printStackTrace();
+			return false;
 		}
 	
 		return state;

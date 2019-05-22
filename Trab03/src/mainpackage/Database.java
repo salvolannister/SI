@@ -223,13 +223,15 @@ public class Database {
 	public static void addLog(int code, String email, String fileName) {
 		 LocalDateTime dateTime = LocalDateTime.now();
 		 String data = dateTime.format( DateTimeFormatter.ISO_DATE_TIME);
-		 String sql ="INSERT INTO records(recordID, date, email, file) VALUES (?,?,?,?)";
+		 String sql ="INSERT INTO records(recordID, date, email, file,id) VALUES (?,?,?,?,?)";
+		 int maxID = getMaxID();
 			try {
 				PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
 				preparedStatement.setInt(1, code);
 				preparedStatement.setString(2,data);
 				preparedStatement.setString(3,email);
 				preparedStatement.setString(4,email);
+				preparedStatement.setInt(5, maxID);
 				preparedStatement.executeUpdate();
 				preparedStatement.close();
 				
@@ -243,12 +245,14 @@ public class Database {
 	public static void addLog(int code, String email) {
 		LocalDateTime dateTime = LocalDateTime.now();
 		 String data = dateTime.format( DateTimeFormatter.ISO_DATE_TIME);
-		 String sql ="INSERT INTO records(recordID, date, email) VALUES (?,?,?)";
+		 String sql ="INSERT INTO records(recordID, date, email,id) VALUES (?,?,?,?)";
+		 int maxID = getMaxID();
 			try {
 				PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
 				preparedStatement.setInt(1, code);
 				preparedStatement.setString(2,data);
 				preparedStatement.setString(3,email);
+				preparedStatement.setInt(4, maxID);
 				preparedStatement.executeUpdate();
 				preparedStatement.close();
 				
@@ -259,9 +263,9 @@ public class Database {
 		
 	}
 
-	public static void printLogs()
+	public static  void printLogs()
 	{
-		String query = "select * from records, messages where messages.recordID = records.recordID order by records.date";
+		String query = "select * from records, messages where messages.recordID = records.recordID orderby records.id";
 		
 		
 		try {
@@ -289,7 +293,27 @@ public class Database {
 		}
 		
 		
-}
+	}
 
+	private static int getMaxID() {
+		String sql = "Select MAX(id) from records";
+		PreparedStatement preparedStatement;
+		int i=0;
+		try {
+			preparedStatement = Database.connection.prepareStatement(sql);
+			
+			ResultSet rs;
+			
+				rs = preparedStatement.executeQuery();
+				i = rs.getInt(1);
+				preparedStatement.close();
+		} catch (SQLException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		
+	
+		return i;
+	}
 
 }

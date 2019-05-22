@@ -341,7 +341,7 @@ public class Main {
 		String path = sc.nextLine();
 		while(Files.exists(Paths.get(path)) == false) {
 			Database.addLog(8004,u.getEmail());
-			System.err.print("FILE DOESN'T EXIST, EXITING \n");
+			
 			System.out.print("Caminho da pasta invalido escerever de novo:");
 		    path = sc.nextLine();
 		}
@@ -375,7 +375,7 @@ public class Main {
 						
 						dec =Integer.parseInt(sc.nextLine());
 							if(dec!=0) {
-								Arquive p = files.get(dec);
+								Arquive p = files.get(dec-1);
 								/*if the user is not enabled ... do something*/
 								int gid = getGID(p.getGroupName());
 								if(p.getDono().equals(u.getEmail()) || u.getGID() ==gid) {

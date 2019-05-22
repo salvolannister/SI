@@ -43,8 +43,9 @@ public class DecryptArquive {
 		Cipher cipher;
 		try {
 			cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
-			System.out.println( "\n" + cipher.getProvider().getInfo() );
+//			System.out.println( "\n" + cipher.getProvider().getInfo() );
 			try {
+				/*private Key is used to decrypt the simmettric key in the envelop*/
 				cipher.init(Cipher.DECRYPT_MODE, k);
 				byte[] cipherText = Arquives.ReadArquive(pEnv);
 				if(cipherText == null) {
@@ -96,8 +97,8 @@ public class DecryptArquive {
 //				e.printStackTrace();
 				return null;
 			} catch (BadPaddingException e) {
-				System.out.println("Bad padding format or wrong PrivateKey");
-//				e.printStackTrace();
+				System.out.println("Bad padding format or secret phrase is wrong");
+				e.printStackTrace();
 				return null;
 			}
 			
