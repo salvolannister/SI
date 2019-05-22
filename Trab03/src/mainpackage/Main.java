@@ -51,8 +51,9 @@ public class Main {
 							if(choice.equals("1")) {
 								exit = true;
 								System.out.println("                       GOODBYE");
-								Database.addLog(1002);
 								Database.addLog(2002);
+								Database.addLog(1002);
+								
 							}
 					}else {
 						/* crea instance di user*/
@@ -119,7 +120,8 @@ public class Main {
 	/* read the password and check if it is correct*/
 	Database.addLog(3001,u.getEmail());
 	boolean valid =false;
-	int count = u.getAttempt();
+	int count = 0;
+
 	String[] values = u.getPandS();
 	/* continue until the password is correct or tentatives are less than 3*/
 		while(!valid && count<3) {
@@ -128,29 +130,29 @@ public class Main {
 						         "           Wrong password, try again\n"	   
 						   );			
 			}
-//		ArrayList<ArrayList<String>> digited =PasswordChecker.RequestForPassword();
-//		/* to be added <5 */
-//		if(digited.size()>8 || digited.size()<6 ) {
-//			System.out.println("Password must be length must be between 8 and 6 digits");
-//			valid  =false;
-//			
-//		}
-//		else {
-//		valid = PasswordChecker.isPasswordValid(digited,values[1],values[0]);
-//		}
-		u.addAttempt(); /* maybe this should be moved elsewhere*/
+		ArrayList<ArrayList<String>> digited =PasswordChecker.RequestForPassword();
+		/* to be added <5 */
+		if(digited.size()>8 || digited.size()<6 ) {
+			System.out.println("Password must be length must be between 8 and 6 digits");
+			valid  =false;
+			
+		}
+		else {
+		valid = PasswordChecker.isPasswordValid(digited,values[1],values[0]);
+		}
+     	u.addAttempt(); /* maybe this should be moved elsewhere*/
 		count ++;
-//		if(valid == false) {
-//			switch(count) {
-//			case 1:
-//				Database.addLog(3004,u.getEmail());
-//			case 2:
-//				Database.addLog(3005,u.getEmail());
-//			case 3:
-//				Database.addLog(3006,u.getEmail());
-//			}
-//		}
-		valid = true;
+		if(valid == false) {
+			switch(count) {
+			case 1:
+				Database.addLog(3004,u.getEmail());
+			case 2:
+				Database.addLog(3005,u.getEmail());
+			case 3:
+				Database.addLog(3006,u.getEmail());
+			}
+		}
+//		valid = true;
 		}
 			/*password is correct*/
 			if(valid) {
@@ -159,6 +161,7 @@ public class Main {
 				
 				
 				count = 0;
+				u.setAttempt(0);
 				u.addAccess();
 				/*verification of private key*/
 				
@@ -265,12 +268,18 @@ public class Main {
 				/*going back to main menu*/
 				
 			case 3:
+				boolean continuar = true;
 				Database.addLog(5004,u.getEmail());
+				while(continuar) {
+					
+				
 				printHeader(u);
 				//printBodyOneVersion2(u);
-				printOptionPasta(u, files2);
+				continuar =printOptionPasta(u, files2);
+				}
 				/*Body 2:how do I calculate consultas*/
-				;
+				return 1;
+				
 			case 4:
 				/*go to login page*/
 				Database.addLog(5005,u.getEmail());
@@ -429,6 +438,14 @@ public class Main {
 							}
 							return false;
 						
+					}else {
+						System.out.println("\n\nPress 0 to exit or 1 to continue reading:");
+						
+						dec =Integer.parseInt(sc.nextLine());
+						if(dec!=0) {
+							return true;
+						}
+						return false;
 					}
 						} catch (UnsupportedEncodingException e) {
 							// TODO Auto-generated catch block
@@ -464,6 +481,7 @@ public class Main {
 			 path = sc.nextLine();
 			 Database.addLog(7003,u.getEmail());
 		}
+		
 		while(!OK) {
 		System.out.print("\n– Senha pessoal:");
 	   // String password = PasswordChecker.readPassword("– Senha pessoal: ");
@@ -537,17 +555,53 @@ public class Main {
 		 
 		 String[] values = Arquives.readCertificate(certificate);
 		 
-		 System.out.println("– Senha pessoal<seis, sete ou oito dígitos>:");
-		 
-		 String password = new String(scanner.nextLine());
-		 boolean OK = checkPassword(password);
-		  while(!OK ) {
-			     Database.addLog(6003, u.getEmail());
-			     System.out.print("\nEsreve de novo a password: ");
-			     password = new String(scanner.nextLine());
-			  	 OK = checkPassword(password);
+//		 System.out.println("– Senha pessoal<seis, sete ou oito dígitos>:");
+//		 
+	 String password = null;
+		 boolean OK = false;
+//		  while(!OK ) {
+//			     Database.addLog(6003, u.getEmail());
+//			     System.out.print("\nEsreve de novo a password: ");
+//			     password = new String(scanner.nextLine());
+//			  	 OK = checkPassword(password);
+//				
+//		  }
+		  /*COPIARE*/
+		 while(!OK) {
+				System.out.print("\n– Senha pessoal:");
+			   // String password = PasswordChecker.readPassword("– Senha pessoal: ");
+				 password = scanner.nextLine();
+				OK =checkPassword(password);
+				if(OK) {
+					
+				System.out.print("\n–Confirm senha pessoal:");
+				String checkPassword = scanner.nextLine();
 				
-		  }
+					if(checkPassword.equals(password)) {
+						
+						
+						OK = true;
+					
+					}else {
+						
+						System.out.println("The two passwords don't correspond");
+						OK = false;
+					}
+				}else {
+					 Database.addLog(6003, u.getEmail());
+					
+					System.out.println("---try again---");
+				}
+		 }
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
 		  System.out.println("Press 1 para continuar Press 0 para voltar no menu principal");
 		  int n = Integer.parseInt(scanner.nextLine());
 		  if(n == 1) {
