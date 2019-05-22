@@ -46,7 +46,7 @@ public class Main {
 					/* scoprire come leggere un resultSEt senzza che dia errore*/
 					if(!alreadyExist) {
 						Database.addLog(2005,u.getEmail());
-						System.out.println("You are not registred, ask the admin to register. conitnue:0 exit:1");
+						System.out.println("You are not registred, ask the admin to be registered. conitnue:0 exit:1");
 						String choice = new String(scanner.nextLine());
 							if(choice.equals("1")) {
 								exit = true;
@@ -67,6 +67,7 @@ public class Main {
 						else {
 							
 							if(checkTime(u)) {
+								System.out.println("hereee");
 								Database.addLog(2002);
 								u.block(0);
 								u.setAttempt(0);
@@ -104,9 +105,10 @@ public class Main {
 		String time =u.getTime();
 		LocalDateTime dateBlocked = LocalDateTime.parse(time, DateTimeFormatter.ISO_DATE_TIME);
 		ZoneOffset zoneOffSet= ZoneOffset.of("+02:00");
+		System.out.println(" now "+dateTime.toEpochSecond(zoneOffSet)+ " before "+dateBlocked.toEpochSecond(zoneOffSet));
 		long diff = dateTime.toEpochSecond(zoneOffSet)-dateBlocked.toEpochSecond(zoneOffSet);
 	
-		
+		System.out.println("difference is "+diff);
 		return diff>140;
 	}
 
@@ -124,29 +126,29 @@ public class Main {
 						         "           Wrong password, try again\n"	   
 						   );			
 			}
-		ArrayList<ArrayList<String>> digited =PasswordChecker.RequestForPassword();
-		/* to be added <5 */
-		if(digited.size()>8 || digited.size()<6 ) {
-			System.out.println("Password must be length must be between 8 and 6 digits");
-			valid  =false;
-			
-		}
-		else {
-		valid = PasswordChecker.isPasswordValid(digited,values[1],values[0]);
-		}
+//		ArrayList<ArrayList<String>> digited =PasswordChecker.RequestForPassword();
+//		/* to be added <5 */
+//		if(digited.size()>8 || digited.size()<6 ) {
+//			System.out.println("Password must be length must be between 8 and 6 digits");
+//			valid  =false;
+//			
+//		}
+//		else {
+//		valid = PasswordChecker.isPasswordValid(digited,values[1],values[0]);
+//		}
 		u.addAttempt(); /* maybe this should be moved elsewhere*/
 		count ++;
-		if(valid == false) {
-			switch(count) {
-			case 1:
-				Database.addLog(3004,u.getEmail());
-			case 2:
-				Database.addLog(3005,u.getEmail());
-			case 3:
-				Database.addLog(3006,u.getEmail());
-			}
-		}
-		//valid = true;
+//		if(valid == false) {
+//			switch(count) {
+//			case 1:
+//				Database.addLog(3004,u.getEmail());
+//			case 2:
+//				Database.addLog(3005,u.getEmail());
+//			case 3:
+//				Database.addLog(3006,u.getEmail());
+//			}
+//		}
+		valid = true;
 		}
 			/*password is correct*/
 			if(valid) {
@@ -454,12 +456,13 @@ public class Main {
 		System.out.print("\n–Confirm senha pessoal:");
 		String checkPassword = sc.nextLine();
 		
-		if(checkPassword.equals(password))
-			Database.addLog(7002, u.getEmail());
-			Database.addLog(7005, u.getEmail());
-			OK = true;
+			if(checkPassword.equals(password)) {
+				Database.addLog(7002, u.getEmail());
+				Database.addLog(7005, u.getEmail());
+				OK = true;
+			}
 		}
-		Database.addLog(7004, u.getEmail());
+		Database.addLog(7004, u.getEmail()); 
 		Database.updatePassword(u, password, path);
 //			
 		System.out.println("Going back to Main Menu");

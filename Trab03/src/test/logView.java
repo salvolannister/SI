@@ -13,8 +13,6 @@ public class logView {
 		Database.printLogs();
 		String sql = "Select MAX(id) from records";
 		PreparedStatement preparedStatement = Database.connection.prepareStatement(sql);
-		
-		
 		ResultSet rs = preparedStatement.executeQuery();
 		int i =rs.getInt(1);
 		System.out.println(i);

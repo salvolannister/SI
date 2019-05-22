@@ -53,7 +53,7 @@ public class User {
 //		return publicKey;
 //	}
 	public User(String email) throws SQLException {
-
+		Database.getUser(email, this);
 //		salt = rs.getString("salt");
 //		GID = rs.getInt("gid");
 //		block = rs.getInt("block");
@@ -69,7 +69,7 @@ public class User {
 //		rs = Database.getGroupName(GID);
 //		groupName=rs.getString(1);
 //		rs.close();
-		this.email = email;
+		this.email =email;
 	}
 	
 	public String getEmail() {
