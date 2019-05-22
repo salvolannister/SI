@@ -484,13 +484,14 @@ public class Main {
 		
 		while(!OK) {
 		System.out.print("\n– Senha pessoal:");
-	   // String password = PasswordChecker.readPassword("– Senha pessoal: ");
-		 password = sc.nextLine();
+	     char[] passwd = System.console().readPassword("[%s]", "Password:");
+		 password = new String(passwd);
 		OK =checkPassword(password);
 		if(OK) {
 			
 		System.out.print("\n–Confirm senha pessoal:");
-		String checkPassword = sc.nextLine();
+		 passwd = System.console().readPassword("[%s]", "Password:");
+		String checkPassword =  new String(passwd);
 		
 			if(checkPassword.equals(password)) {
 				
@@ -570,12 +571,14 @@ public class Main {
 		 while(!OK) {
 				System.out.print("\n– Senha pessoal:");
 			   // String password = PasswordChecker.readPassword("– Senha pessoal: ");
-				 password = scanner.nextLine();
+				char[] passwd = System.console().readPassword("[%s]", "Password:");
+				 password = new String(passwd);
 				OK =checkPassword(password);
 				if(OK) {
 					
 				System.out.print("\n–Confirm senha pessoal:");
-				String checkPassword = scanner.nextLine();
+				passwd = System.console().readPassword("[%s]", "Password:");
+				String checkPassword = new String(passwd);
 				
 					if(checkPassword.equals(password)) {
 						
