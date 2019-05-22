@@ -214,7 +214,7 @@ public class User {
 	
 	public void block(int i) throws SQLException {
 	     Database.changeBlockStatus(this,i);
-		
+		  
 	}
 
 	public void setAttempt(int i) {

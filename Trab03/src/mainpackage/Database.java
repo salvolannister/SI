@@ -136,6 +136,7 @@ public class Database {
 	        preparedStatement.executeUpdate();
 	        preparedStatement.close();
 		}
+		
 	}
 
 	public static  void getGroupName(int i, User u) throws SQLException {

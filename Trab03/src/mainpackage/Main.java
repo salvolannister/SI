@@ -70,6 +70,7 @@ public class Main {
 								System.out.println("hereee");
 								Database.addLog(2002);
 								u.block(0);
+								u.setBlock(0);
 								u.setAttempt(0);
 								tryLog(u);
 							}else {
@@ -105,10 +106,10 @@ public class Main {
 		String time =u.getTime();
 		LocalDateTime dateBlocked = LocalDateTime.parse(time, DateTimeFormatter.ISO_DATE_TIME);
 		ZoneOffset zoneOffSet= ZoneOffset.of("+02:00");
-		System.out.println(" now "+dateTime.toEpochSecond(zoneOffSet)+ " before "+dateBlocked.toEpochSecond(zoneOffSet));
+//		System.out.println(" now "+dateTime.toEpochSecond(zoneOffSet)+ " before "+dateBlocked.toEpochSecond(zoneOffSet));
 		long diff = dateTime.toEpochSecond(zoneOffSet)-dateBlocked.toEpochSecond(zoneOffSet);
 	
-		System.out.println("difference is "+diff);
+//		System.out.println("difference is "+diff);
 		return diff>140;
 	}
 
@@ -168,7 +169,7 @@ public class Main {
 					e.printStackTrace();
 				}
 				
-				if(u.getBlock()==0)
+				if(u.getBlock()== 0)
 					{
 					/*interface moment*/
 					Database.addLog(4002,u.getEmail());
@@ -183,7 +184,7 @@ public class Main {
 				System.out.print("###################################################\n"+
 						   		 "You have been blocked wait 2 minutes and try again\n" );
 				u.block(1);
-				
+				u.setBlock(1);
 			}
 		
 		
@@ -664,6 +665,7 @@ public class Main {
 			System.out.print("###################################################\n"+
 					   "You have been blocked, wait 2 minutes and try again\n" );
 			u.block(1);
+			u.setBlock(1);
 		}
 //		scanner.close();
 	}
