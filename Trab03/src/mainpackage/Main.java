@@ -29,6 +29,7 @@ import javax.security.cert.X509Certificate;
 public class Main {
 
 	public static void main(String[] args) {
+		Database.addLog(1001);
 		Database.setDatabase("./database/trabalho3.db");
 		Scanner scanner = new Scanner(System.in);
 		boolean exit = false;
@@ -37,7 +38,7 @@ public class Main {
 							   "		      LOGIN PAGE\n"+		   
 							   "			 email:");
 			String email = new String (scanner.nextLine());
-			Database.addLog(1001);
+			
 			Database.addLog(2001);
 			User u = new User() ;
 			/* check from the db if the email is valid or not */
@@ -417,7 +418,7 @@ public class Main {
 										try {
 											fos.write(byteContent);
 										} catch (IOException e) {
-											System.out.println("Arquivo nao fui salvad com Sucesso!");
+											System.out.println("Arquivo nao fui salvada com Sucesso!");
 											e.printStackTrace();
 										}
 										System.out.println("Arquivo Salvo com Sucesso!");
@@ -733,6 +734,8 @@ public class Main {
 		// DA VERIFICARE SE BLOCCA VERAMENTE O CRASCIA TUTTO
 		int attempt = 0;
 		boolean OK = false;
+		char[] passwd;
+		
 		Scanner scanner = new Scanner(System.in);
 		u.setAttempt(0);
 		while(attempt< 3  && !OK) {
@@ -749,14 +752,16 @@ public class Main {
 						   "Working Directory is"+ System.getProperty("user.dir")+		   
 						   "\n	Binary file path:");
 				str = scanner.nextLine();
+				
 			    binFilepath = new String (str);
 			    Database.addLog(4004,u.getEmail());
 			}
 			
 			
-			System.out.print("###################################################\n"+
-					   "password:");	   
-			String secretPhrase = new String (scanner.nextLine());
+			
+		    passwd = System.console().readPassword("[%s]", "Password:");
+			 
+			String secretPhrase = new String (passwd);
 			
 			
 //			System.out.print("###################################################\n"+

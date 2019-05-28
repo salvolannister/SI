@@ -131,6 +131,7 @@ public class User {
 		this.GID = GID;
 		this.block = 0;
 		this.attempt= 0;
+		
 		Database.getGroupName(GID, this);
 		
 		Database.addUser(this);

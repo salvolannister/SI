@@ -111,7 +111,7 @@ public class DecryptArquive {
 						else {
 							Database.addLog(8015, email,fName);
 						}
-						System.out.println("Can't decrypt .env privateKey is wrong");
+						System.out.println("Can't decrypt .enc chave secreta is wrong");
 						return null;
 					}
 					
